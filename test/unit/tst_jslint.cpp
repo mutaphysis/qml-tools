@@ -11,14 +11,14 @@ public:
     JsLint();
     
 private Q_SLOTS:
-    void testCase1();
+    void testScriptCollector();
 };
 
 JsLint::JsLint()
 {
 }
 
-void JsLint::testCase1()
+void JsLint::testScriptCollector()
 {
     QString filename = "/Users/loplop/Programmieren/qml-lint/test/cases/jslint/Test.qml";
 
@@ -31,7 +31,22 @@ void JsLint::testCase1()
     ScriptCollector collector;
     collector.parse(code, QUrl::fromLocalFile(filename), filename);    
 
-    qDebug() << "\n" << collector.scripts();
+
+    QList<ScriptCollector::Script> scripts = collector.scripts();
+
+    QCOMPARE(scripts.length(), 11);
+
+    QCOMPARE(scripts.at(0).name, QString("firstFunction"));
+    QCOMPARE(scripts.at(1).name, QString("secondFunction"));
+    QCOMPARE(scripts.at(2).name, QString("functionProp"));
+    QCOMPARE(scripts.at(3).name, QString("bindingProp"));
+    QCOMPARE(scripts.at(4).name, QString("ternaryProp"));
+    QCOMPARE(scripts.at(5).name, QString("scriptProp"));
+    QCOMPARE(scripts.at(6).name, QString("overideProp"));
+    QCOMPARE(scripts.at(7).name, QString("onHandler"));
+    QCOMPARE(scripts.at(8).name, QString("inlineFunction"));
+    QCOMPARE(scripts.at(9).name, QString("inlineListFunction"));
+    QCOMPARE(scripts.at(10).name, QString("childFunction"));
 }
 
 QTEST_MAIN(JsLint)

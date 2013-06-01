@@ -24,7 +24,7 @@ bool ScriptCollector::parse(const QString &data,
     m_errors += parser.errors();
 
     if (parser.errors().isEmpty()) {
-        qDebug() << "Parsed" << urlString << "succesfully";
+        qDebug() << "Parsed" << urlString << "successfully";
         collectJS(parser.tree());
         qSort(m_scripts);
         return true;
