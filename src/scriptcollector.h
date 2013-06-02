@@ -11,7 +11,6 @@ namespace QQmlScript {
 }
 
 /**
- * @brief The ScriptCollector class
  * The ScriptCollector parses a qml file (just parsing no compiling) and collects
  * all occurrences of javascript in this file.
  *
@@ -69,7 +68,6 @@ public:
             return (location < o.location);
         }
     };
-
 
     ScriptCollector();
     virtual ~ScriptCollector();

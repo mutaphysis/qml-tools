@@ -1,26 +1,25 @@
 #include <QString>
 #include <QtTest>
+#include <QCoreApplication>
 
 #include <scriptcollector.h>
+#include <jslintstep.h>
 
 class JsLint : public QObject
 {
     Q_OBJECT
     
 public:
-    JsLint();
+    JsLint() {}
     
 private Q_SLOTS:
     void testScriptCollector();
+    void test2();
 };
-
-JsLint::JsLint()
-{
-}
 
 void JsLint::testScriptCollector()
 {
-    QString filename = "/Users/loplop/Programmieren/qml-lint/test/cases/jslint/Test.qml";
+    QString filename =  "test/cases/ScriptCollector.qml";
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -47,6 +46,14 @@ void JsLint::testScriptCollector()
     QCOMPARE(scripts.at(8).name, QString("inlineFunction"));
     QCOMPARE(scripts.at(9).name, QString("inlineListFunction"));
     QCOMPARE(scripts.at(10).name, QString("childFunction"));
+}
+
+void JsLint::test2()
+{
+    JsLintStep lint;
+    lint.setup("jslint/jslint.js");
+    QJsonDocument results = lint.lint("var a = 4 - eval('6'); \n print('hello')\nx = 4 == 3 + a;\n");
+    qDebug() << results.toJson();
 }
 
 QTEST_MAIN(JsLint)
