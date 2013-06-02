@@ -50,8 +50,8 @@ void JsLintTest::testScriptCollector()
 
 void JsLintTest::test2()
 {
-    JsLint lint;
-    lint.setup("jslint/jslint.js");
+    JsLint lint;    
+    lint.setup(QString(SRCDIR) + "../../externals/jslint/jslint.js");
     QJsonDocument results = lint.lint("var a = 4 - eval('6'); \n print('hello')\nx = 4 == 3 + a;\n");
     qDebug() << results.toJson();
 }

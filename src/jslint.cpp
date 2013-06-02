@@ -21,7 +21,7 @@ bool JsLint::setup(const QString &lintPath)
     }
 
     QString jslintCode = QTextStream(&lintFile).readAll();
-    QJSValue lintLoader = m_engine.evaluate(jslintCode, "jslint/jslint.js");
+    QJSValue lintLoader = m_engine.evaluate(jslintCode, lintPath);
 
     if (lintLoader.isError()) {
         qCritical() << "Uncaught exception:" << lintLoader.toString();
