@@ -1,11 +1,11 @@
 
 SOURCES += \
-    $$PWD/jslintstep.cpp \
+    $$PWD/jslint.cpp \
     $$PWD/scriptcollector.cpp
 
 
 HEADERS += \
-    $$PWD/jslintstep.h \
+    $$PWD/jslint.h \
     $$PWD/scriptcollector.h
 
 INCLUDEPATH += $$PWD/

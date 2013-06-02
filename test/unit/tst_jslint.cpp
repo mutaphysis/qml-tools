@@ -3,21 +3,21 @@
 #include <QCoreApplication>
 
 #include <scriptcollector.h>
-#include <jslintstep.h>
+#include <jslint.h>
 
-class JsLint : public QObject
+class JsLintTest : public QObject
 {
     Q_OBJECT
     
 public:
-    JsLint() {}
+    JsLintTest() {}
     
 private Q_SLOTS:
     void testScriptCollector();
     void test2();
 };
 
-void JsLint::testScriptCollector()
+void JsLintTest::testScriptCollector()
 {
     QString filename =  "test/cases/ScriptCollector.qml";
 
@@ -48,13 +48,13 @@ void JsLint::testScriptCollector()
     QCOMPARE(scripts.at(10).name, QString("childFunction"));
 }
 
-void JsLint::test2()
+void JsLintTest::test2()
 {
-    JsLintStep lint;
+    JsLint lint;
     lint.setup("jslint/jslint.js");
     QJsonDocument results = lint.lint("var a = 4 - eval('6'); \n print('hello')\nx = 4 == 3 + a;\n");
     qDebug() << results.toJson();
 }
 
-QTEST_MAIN(JsLint)
+QTEST_MAIN(JsLintTest)
 #include "tst_jslint.moc"

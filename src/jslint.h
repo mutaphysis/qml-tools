@@ -1,16 +1,16 @@
-#ifndef JSLINTSTEP_H
-#define JSLINTSTEP_H
+#ifndef JSLINT_H
+#define JSLINT_H
 
 #include <QObject>
 #include <QString>
 #include <QJsonDocument>
 #include <QJSEngine>
 
-class JsLintStep : public QObject
+class JsLint : public QObject
 {
 public:
-    JsLintStep(QObject *parent = 0);
-    virtual ~JsLintStep();
+    JsLint(QObject *parent = 0);
+    virtual ~JsLint();
 
     QJsonDocument lint(const QString &code);
     bool setup(const QString &lintPath = "jslint/jslint.js");
@@ -20,4 +20,4 @@ private:
     QJSValue m_lintFunction;
 };
 
-#endif // JSLINTSTEP_H
+#endif // JSLINT_H

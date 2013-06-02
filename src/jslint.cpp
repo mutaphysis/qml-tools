@@ -1,18 +1,18 @@
-#include "jslintstep.h"
+#include "jslint.h"
 
 #include <QFile>
 #include <QDebug>
 
-JsLintStep::JsLintStep(QObject *parent)
+JsLint::JsLint(QObject *parent)
     : QObject(parent)
 {
 }
 
-JsLintStep::~JsLintStep()
+JsLint::~JsLint()
 {
 }
 
-bool JsLintStep::setup(const QString &lintPath)
+bool JsLint::setup(const QString &lintPath)
 {
     QFile lintFile(lintPath);
     if (!lintFile.open(QIODevice::ReadOnly)) {
@@ -39,14 +39,14 @@ bool JsLintStep::setup(const QString &lintPath)
     return true;
 }
 
-QJsonDocument JsLintStep::lint(const QString &code)
+QJsonDocument JsLint::lint(const QString &code)
 {
     QJSValueList args;
     args << code;
 
     QJSValue lintResult = m_lintFunction.call(args);
 
-    qDebug() << "jsLintRun okay:" << lintResult.toBool();
+    qDebug() << "JsLint okay:" << lintResult.toBool();
 
     QJSValue jsLintErrors = m_engine.evaluate("JSON.stringify(JSLINT.errors)");
     if (jsLintErrors.isError()) {
