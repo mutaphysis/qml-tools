@@ -4,6 +4,7 @@
 
 #include <scriptcollector.h>
 #include <jslint.h>
+#include <jsinstrument.h>
 
 class JsLintTest : public QObject
 {
@@ -15,6 +16,7 @@ public:
 private Q_SLOTS:
     void testScriptCollector();
     void test2();
+    void test3();
 };
 
 void JsLintTest::testScriptCollector()
@@ -54,6 +56,21 @@ void JsLintTest::test2()
     lint.setup(QString(SRCDIR) + "../../externals/jslint/jslint.js");
     QJsonDocument results = lint.lint("var a = 4 - eval('6'); \n print('hello')\nx = 4 == 3 + a;\n");
     qDebug() << results.toJson();
+}
+
+void JsLintTest::test3()
+{
+    JsInstrument instrument;
+    instrument.setup();
+
+    QString result = instrument.instrument("{\n"
+                                           "    print(4);"
+                                           "    if (true) {"
+                                           "        var a = x > 3 ? 'a' : 'b'"
+                                           "    }"
+                                           "}", "unknown.js");
+
+    qDebug() << result;
 }
 
 QTEST_MAIN(JsLintTest)
