@@ -6,6 +6,7 @@
 JsLint::JsLint(QObject *parent)
     : QObject(parent)
 {
+    setup("://jslint/jslint.js");
 }
 
 JsLint::~JsLint()

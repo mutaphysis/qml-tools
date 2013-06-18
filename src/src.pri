@@ -10,4 +10,8 @@ HEADERS += \
     $$PWD/jsinstrument.h \
     $$PWD/scriptcollector.h
 
+
+RESOURCES += \
+    $$PWD/../externals/externals.qrc
+
 INCLUDEPATH += $$PWD/

@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>escodegen/escodegen.browser.js</file>
+        <file>esprima/esprima.js</file>
+        <file>istanbul/instrumenter.js</file>
+        <file>jslint/jslint.js</file>
+    </qresource>
+</RCC>

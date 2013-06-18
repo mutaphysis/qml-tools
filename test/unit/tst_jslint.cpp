@@ -52,8 +52,7 @@ void JsLintTest::testScriptCollector()
 
 void JsLintTest::test2()
 {
-    JsLint lint;    
-    lint.setup(QString(SRCDIR) + "../../externals/jslint/jslint.js");
+    JsLint lint;
     QJsonDocument results = lint.lint("var a = 4 - eval('6'); \n print('hello')\nx = 4 == 3 + a;\n");
     qDebug() << results.toJson();
 }
@@ -61,8 +60,6 @@ void JsLintTest::test2()
 void JsLintTest::test3()
 {
     JsInstrument instrument;
-    instrument.setup();
-
     QString result = instrument.instrument("{\n"
                                            "    print(4);"
                                            "    if (true) {"

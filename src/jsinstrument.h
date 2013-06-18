@@ -13,9 +13,10 @@ public:
     virtual ~JsInstrument();
 
     QString instrument(const QString &code, const QString &fileName);
-    bool setup();
 
 private:
+    bool setup();
+
     QJSEngine m_engine;
 };
 

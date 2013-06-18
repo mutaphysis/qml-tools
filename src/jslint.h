@@ -13,9 +13,10 @@ public:
     virtual ~JsLint();
 
     QJsonDocument lint(const QString &code);
-    bool setup(const QString &lintPath = "externals/jslint/jslint.js");
 
 private:
+    bool setup(const QString &lintPath);
+
     QJSEngine m_engine;
     QJSValue m_lintFunction;
 };

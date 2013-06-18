@@ -6,6 +6,7 @@
 JsInstrument::JsInstrument(QObject *parent)
     : QObject(parent)
 {
+    setup();
 }
 
 JsInstrument::~JsInstrument()
@@ -17,7 +18,7 @@ bool JsInstrument::setup()
     // register window to allow loading escodegen.browser
     m_engine.evaluate("window = this");
 
-    QFile esprimaFile("externals/esprima/esprima.js");
+    QFile esprimaFile("://esprima/esprima.js");
     if (!esprimaFile.open(QIODevice::ReadOnly)) {
         qCritical() << "Cannot open" << esprimaFile.fileName() << ":" << esprimaFile.errorString();
         return false;
@@ -33,7 +34,7 @@ bool JsInstrument::setup()
 
     // -- //
 
-    QFile escodegenFile("externals/escodegen/escodegen.browser.js");
+    QFile escodegenFile("://escodegen/escodegen.browser.js");
     if (!escodegenFile.open(QIODevice::ReadOnly)) {
         qCritical() << "Cannot open" << escodegenFile.fileName() << ":" << escodegenFile.errorString();
         return false;
@@ -49,7 +50,7 @@ bool JsInstrument::setup()
 
     // -- //
 
-    QFile istanbulFile("externals/istanbul/instrumenter.js");
+    QFile istanbulFile("://istanbul/instrumenter.js");
     if (!istanbulFile.open(QIODevice::ReadOnly)) {
         qCritical() << "Cannot open" << istanbulFile.fileName() << ":" << istanbulFile.errorString();
         return false;
@@ -70,8 +71,12 @@ bool JsInstrument::setup()
 QString JsInstrument::instrument(const QString &code, const QString &fileName)
 {
     QJSValue instance = m_engine.evaluate("myInstrumenter = new Instrumenter()");
-    QJSValue instrumentFunc = m_engine.evaluate("myInstrumenter.instrumentSync");
+    if (instance.isError()) {
+        qCritical() << "Uncaught exception:" << instance.toString();
+        return QString();
+    }
 
+    QJSValue instrumentFunc = m_engine.evaluate("myInstrumenter.instrumentSync");
     if (instrumentFunc.isError()) {
         qCritical() << "Uncaught exception:" << instrumentFunc.toString();
         return QString();
