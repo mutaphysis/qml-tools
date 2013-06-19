@@ -388,7 +388,10 @@
             this.walker.startWalk(program);
             codegenOptions = this.opts.codeGenerationOptions || { format: { compact: !this.opts.noCompact }};
             //console.log(JSON.stringify(program, undefined, 2));
-            return this.getPreamble(code) + '\n' + ESPGEN.generate(program, codegenOptions) + '\n';
+
+            return { preamble: this.getPreamble(code),
+                     code: ESPGEN.generate(program, codegenOptions)
+            };
         },
         /**
          * Callback based instrumentation. Note that this still executes synchronously in the same process tick

@@ -60,13 +60,14 @@ void JsLintTest::test2()
 void JsLintTest::test3()
 {
     JsInstrument instrument;
-    QString result = instrument.instrument("{\n"
-                                           "    print(4);"
-                                           "    if (true) {"
-                                           "        var a = x > 3 ? 'a' : 'b'"
-                                           "    }"
-                                           "}", "unknown.js");
+//    QString result = instrument.instrument("{\n"
+//                                           "    print(4);"
+//                                           "    if (true) {"
+//                                           "        var a = x > 3 ? 'a' : 'b'"
+//                                           "    }"
+//                                           "}", "unknown.js");
 
+    QString result = instrument.instrument("{ if (Date.now > 1203) { \"hello\" } else { \"world\" } }", "unknown.js");
     qDebug() << result;
 }
 

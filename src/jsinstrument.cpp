@@ -90,5 +90,5 @@ QString JsInstrument::instrument(const QString &code, const QString &fileName)
         return QString();
     }
 
-    return results.toString();
+    return results.property("preamble").toString();
 }

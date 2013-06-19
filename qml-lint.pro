@@ -1,4 +1,6 @@
 TEMPLATE = subdirs
 
-SUBDIRS += src
-SUBDIRS += test/unit
+SUBDIRS += \
+        src \
+        qml-cov \
+        test/unit
