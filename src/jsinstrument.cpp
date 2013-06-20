@@ -68,18 +68,18 @@ bool JsInstrument::setup()
     return true;
 }
 
-QString JsInstrument::instrument(const QString &code, const QString &fileName)
+JsInstrument::Instrumented JsInstrument::instrument(const QString &code, const QString &fileName)
 {
-    QJSValue instance = m_engine.evaluate("myInstrumenter = new Instrumenter()");
+    QJSValue instance = m_engine.evaluate("myInstrumenter = new Instrumenter({ coverageVariable: 'QtCov.coverage.data'})");
     if (instance.isError()) {
         qCritical() << "Uncaught exception:" << instance.toString();
-        return QString();
+        return Instrumented();
     }
 
     QJSValue instrumentFunc = m_engine.evaluate("myInstrumenter.instrumentSync");
     if (instrumentFunc.isError()) {
         qCritical() << "Uncaught exception:" << instrumentFunc.toString();
-        return QString();
+        return Instrumented();
     }
 
     QJSValueList args = QJSValueList() << code << fileName;
@@ -87,8 +87,10 @@ QString JsInstrument::instrument(const QString &code, const QString &fileName)
 
     if (results.isError()) {
         qCritical() << "Uncaught exception:" << results.toString();
-        return QString();
+        return Instrumented();
     }
 
-    return results.property("preamble").toString();
+    Instrumented result = {results.property("code").toString(),
+                           results.property("property").toString()};
+    return result;
 }

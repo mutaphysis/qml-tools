@@ -67,8 +67,11 @@ void JsLintTest::test3()
 //                                           "    }"
 //                                           "}", "unknown.js");
 
-    QString result = instrument.instrument("{ if (Date.now > 1203) { \"hello\" } else { \"world\" } }", "unknown.js");
-    qDebug() << result;
+    JsInstrument::Instrumented instrumented = instrument.instrument("{ if (Date.now > 1203) { \"hello\" } else { \"world\" } }", "unknown.js");
+    QString code = instrumented.code;
+    QString property = instrumented.property;
+
+    qDebug() << property << "\n" << code;
 }
 
 QTEST_MAIN(JsLintTest)

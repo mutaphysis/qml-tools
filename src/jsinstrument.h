@@ -9,10 +9,15 @@
 class JsInstrument : public QObject
 {
 public:
+    struct Instrumented {
+        QString code;
+        QString property;
+    };
+
     JsInstrument(QObject *parent = 0);
     virtual ~JsInstrument();
 
-    QString instrument(const QString &code, const QString &fileName);
+    JsInstrument::Instrumented instrument(const QString &code, const QString &fileName);
 
 private:
     bool setup();
