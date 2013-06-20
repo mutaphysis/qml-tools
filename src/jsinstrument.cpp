@@ -68,7 +68,11 @@ bool JsInstrument::setup()
     return true;
 }
 
-JsInstrument::Instrumented JsInstrument::instrument(const QString &code, const QString &fileName)
+JsInstrument::Instrumented JsInstrument::instrument(
+        const QString &code,
+        const QString &fileName,
+        const uint lineOffset,
+        const uint columnOffset)
 {
     QJSValue instance = m_engine.evaluate("myInstrumenter = new Instrumenter({ coverageVariable: 'QtCov.coverage.data'})");
     if (instance.isError()) {
@@ -82,13 +86,16 @@ JsInstrument::Instrumented JsInstrument::instrument(const QString &code, const Q
         return Instrumented();
     }
 
-    QJSValueList args = QJSValueList() << code << fileName;
+    // make sure the instrumentation gets the same offsets as the original code
+    QString indentedCode = QString(lineOffset, '\n') + QString(columnOffset, ' ') + code;
+    QJSValueList args = QJSValueList() << indentedCode << fileName;
     QJSValue results = instrumentFunc.callWithInstance(instance, args);
 
     if (results.isError()) {
         qCritical() << "Uncaught exception:" << results.toString();
         return Instrumented();
     }
+
 
     Instrumented result = {results.property("code").toString(),
                            results.property("property").toString()};

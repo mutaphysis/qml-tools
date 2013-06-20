@@ -60,14 +60,12 @@ void JsLintTest::test2()
 void JsLintTest::test3()
 {
     JsInstrument instrument;
-//    QString result = instrument.instrument("{\n"
-//                                           "    print(4);"
-//                                           "    if (true) {"
-//                                           "        var a = x > 3 ? 'a' : 'b'"
-//                                           "    }"
-//                                           "}", "unknown.js");
-
-    JsInstrument::Instrumented instrumented = instrument.instrument("{ if (Date.now > 1203) { \"hello\" } else { \"world\" } }", "unknown.js");
+    JsInstrument::Instrumented instrumented = instrument.instrument("{\n"
+                                           "    print(4);"
+                                           "    if (true) {"
+                                           "        var a = x > 3 ? 'a' : 'b'"
+                                           "    }"
+                                           "}", "unknown.js", 5, 10);
     QString code = instrumented.code;
     QString property = instrumented.property;
 

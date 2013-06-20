@@ -17,7 +17,10 @@ public:
     JsInstrument(QObject *parent = 0);
     virtual ~JsInstrument();
 
-    JsInstrument::Instrumented instrument(const QString &code, const QString &fileName);
+    JsInstrument::Instrumented instrument(const QString &code,
+                                          const QString &fileName,
+                                          const uint lineOffset = 0,
+                                          const uint columnOffset = 0);
 
 private:
     bool setup();
