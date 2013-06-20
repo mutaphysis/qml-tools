@@ -3652,7 +3652,7 @@ parseStatement: true, parseSourceElement: true */
         delegate = SyntaxTreeDelegate;
         source = code;
         index = 0;
-        lineNumber = (source.length > 0) ? 1 : 0;
+        lineNumber = 0;
         lineStart = 0;
         length = source.length;
         lookahead = null;
