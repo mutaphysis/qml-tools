@@ -133,7 +133,6 @@ void ScriptCollector::collectJS(QQmlScript::Object *node, const QString &data)
     // main properties
     QQmlScript::Property *prop = node->properties.first();
     while (prop != 0) {
-
         QQmlScript::Value *value = prop->values.first();
         while (value != 0) {
 
@@ -161,6 +160,11 @@ void ScriptCollector::collectJS(QQmlScript::Object *node, const QString &data)
             }
 
             value = prop->values.next(value);
+        }
+
+        // grouped and attached properties have sub nodes
+        if (prop->value) {
+            collectJS(prop->value, data);
         }
 
         prop = node->properties.next(prop);

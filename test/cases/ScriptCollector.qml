@@ -37,6 +37,9 @@ QtObject  // {}
     property var objectProp: QtObject { function inlineFunction() {} }
     property list<QtObject> arrayProp: [QtObject { function inlineListFunction() {} }, QtObject { }, QtObject { }]
     
+    Component.onSomeEventHandler: {
+    }
+    
     QtObject {
         function 
     childFunction(param1, param2) 
