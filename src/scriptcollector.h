@@ -33,6 +33,12 @@ public:
         Function
     };
 
+    struct LocationRange
+    {
+        quint32 offset;
+        quint32 length;
+    };
+
     struct Location
     {
         quint16 line;
@@ -43,12 +49,13 @@ public:
             return line < other.line ||
                    (line == other.line && column < other.column);
         }
-    };
+    };  
 
     struct LocationSpan
     {
         Location start;
-        Location end;
+        Location end;        
+        LocationRange range;
 
         inline bool operator<(const LocationSpan &o) const
         {
@@ -61,7 +68,7 @@ public:
         QString name;
         QString code;
         Type type;
-        LocationSpan location;
+        LocationSpan location;        
 
         bool operator<(const Script &o) const
         {
@@ -76,16 +83,19 @@ public:
     void clear();
 
     QList<ScriptCollector::Script> scripts() const;
-protected:
+    QList<QQmlError> errors() const;
+    quint32 firstPropertyOffset() const;
 
 private:
-    void collectJS(QQmlScript::Object *node);
+    void determineFirstPropertyOffset(QQmlScript::Object *node);
+    void collectJS(QQmlScript::Object *node, const QString &data);
 
     QList<QQmlError> m_errors;
     QList<ScriptCollector::Script> m_scripts;
+    quint32 m_firstPropertyOffset;
 };
 
-
+void mapOffsetToLineAndColumn(const QString &data, const quint32 &offset, quint16 &line, quint16 &column);
 QDebug operator<<(QDebug dbg, const ScriptCollector::Script &script);
 
 #endif // SCRIPTCOLLECTOR_H

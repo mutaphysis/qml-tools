@@ -33,7 +33,9 @@ QtObject {
     property list<QtObject> arrayProp: [QtObject { function inlineListFunction() {} }, QtObject { }, QtObject { }]
     
     QtObject {
-        function childFunction() {
+        function 
+    childFunction(param1, param2) 
+            {
         }
     }
 }
