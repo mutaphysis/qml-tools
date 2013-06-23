@@ -5,6 +5,7 @@
 #include <scriptcollector.h>
 #include <jslint.h>
 #include <jsinstrument.h>
+#include <qmlinstrumenttask.h>
 
 class JsLintTest : public QObject
 {
@@ -17,6 +18,7 @@ private Q_SLOTS:
     void testScriptCollector();
     void test2();
     void test3();
+    void test4();
 };
 
 void testScript(
@@ -74,7 +76,9 @@ void JsLintTest::test2()
 {
     JsLint lint;
     QJsonDocument results = lint.lint("var a = 4 - eval('6'); \n print('hello')\nx = 4 == 3 + a;\n");
+
     //qDebug() << results.toJson();
+    QVERIFY(results.toJson().length() > 0);
 }
 
 void JsLintTest::test3()
@@ -90,7 +94,16 @@ void JsLintTest::test3()
     QString property = instrumented.property;
 
     //qDebug() << property << "\n" << code;
+    QVERIFY(code.length() > 0);
+    QVERIFY(property.length() > 0);
 }
+
+void JsLintTest::test4()
+{
+    QmlInstrumentTask instrumenter;
+    instrumenter.instrumentFile("test/cases/Coverage2.qml");
+}
+
 
 QTEST_MAIN(JsLintTest)
 #include "tst_jslint.moc"
