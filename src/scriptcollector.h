@@ -84,18 +84,17 @@ public:
 
     QList<ScriptCollector::Script> scripts() const;
     QList<QQmlError> errors() const;
-    quint32 firstPropertyOffset() const;
+    quint32 objectStartOffset() const;
 
 private:
-    void determineFirstPropertyOffset(QQmlScript::Object *node);
+    void determineObjectStartOffset(const QString &data, QQmlScript::Object *node);
     void collectJS(QQmlScript::Object *node, const QString &data);
 
     QList<QQmlError> m_errors;
     QList<ScriptCollector::Script> m_scripts;
-    quint32 m_firstPropertyOffset;
+    quint32 m_objectStartOffset;
 };
 
-void mapOffsetToLineAndColumn(const QString &data, const quint32 &offset, quint16 &line, quint16 &column);
 QDebug operator<<(QDebug dbg, const ScriptCollector::Script &script);
 
 #endif // SCRIPTCOLLECTOR_H

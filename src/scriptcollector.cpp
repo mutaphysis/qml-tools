@@ -6,8 +6,39 @@
 #include <private/qqmltypeloader_p.h>
 #include <private/qqmlscript_p.h>
 
+inline bool isLineTerminatorSequence(const QChar &c)
+{
+    switch (c.unicode()) {
+    case 0x000Au:
+    case 0x2028u:
+    case 0x2029u:
+    case 0x000Du:
+        return true;
+    default:
+        return false;
+    }
+}
+
+void mapOffsetToLineAndColumn(const QString &data, const quint32 &offset, quint16 &line, quint16 &column)
+{
+    line = 1;
+    column = 1;
+
+    if (data.length() <= (int)offset) {
+        return;
+    }
+
+    for (quint32 index = 0; index <= offset; ++index) {
+        ++column;
+        if (isLineTerminatorSequence(data.at(index))) {
+            ++line;
+            column = 1;
+        }
+    }
+}
+
 ScriptCollector::ScriptCollector() :
-    m_firstPropertyOffset(0)
+    m_objectStartOffset(0)
 {
 }
 
@@ -27,7 +58,7 @@ bool ScriptCollector::parse(const QString &data,
     if (parser.errors().isEmpty()) {
         qDebug() << "Parsed" << urlString << "successfully";
         collectJS(parser.tree(), data);
-        determineFirstPropertyOffset(parser.root);
+        determineObjectStartOffset(data, parser.root);
         qSort(m_scripts);
         return true;
     } else {
@@ -52,9 +83,9 @@ QList<ScriptCollector::Script> ScriptCollector::scripts() const
     return m_scripts;
 }
 
-quint32 ScriptCollector::firstPropertyOffset() const
+quint32 ScriptCollector::objectStartOffset() const
 {
-    return m_firstPropertyOffset;
+    return m_objectStartOffset;
 }
 
 inline QString toString(const QHashedStringRef& ref)
@@ -62,24 +93,39 @@ inline QString toString(const QHashedStringRef& ref)
     return QString(ref.constData(), ref.length());
 }
 
-void ScriptCollector::determineFirstPropertyOffset(QQmlScript::Object *node)
-{
-    quint32 firstPropertyOffset = UINT32_MAX;
-    QQmlScript::Property *first = node->properties.first();
-    while (first) {
-        if (first->location.range.offset < firstPropertyOffset) {
-            firstPropertyOffset = first->location.range.offset;
-        }
-        first = node->properties.next(first);
-    }
-    first = node->defaultProperty;
-    if (first) {
-        if (first->location.range.offset < firstPropertyOffset) {
-            firstPropertyOffset = first->location.range.offset;
-        }
-    }
+// This is really ugly, should use the real parser instead... but no internal access
+void ScriptCollector::determineObjectStartOffset(const QString &data, QQmlScript::Object *node)
+{    
+    static QLatin1Char CHAR_SLASH('/');
+    static QLatin1Char CHAR_STAR('*');
+    static QLatin1Char CHAR_CURLY_OPEN('{');
+    m_objectStartOffset = node->location.range.offset;
 
-    m_firstPropertyOffset = firstPropertyOffset;
+    bool multilineComment = false;
+    bool singleLineComment = false;
+    for (quint32 index = node->location.range.offset,
+                 length = node->location.range.offset + node->location.range.length;
+                 index <= length; ++index) {
+        ++m_objectStartOffset;
+
+        if (!multilineComment && !singleLineComment) {
+            if (data.at(index) == CHAR_SLASH && data.at(index + 1) == CHAR_SLASH) {
+                singleLineComment = true;
+            } else if (data.at(index) == CHAR_SLASH && data.at(index + 1) == CHAR_STAR) {
+                multilineComment = true;
+            } else if (data.at(index) == CHAR_CURLY_OPEN) {
+                return;
+            }
+        }
+
+        if (data.at(index) == CHAR_STAR && data.at(index + 1) == CHAR_SLASH) {
+            multilineComment = false;
+        }
+
+        if (isLineTerminatorSequence(data.at(index))) {
+            singleLineComment = false;
+        }
+    }
 }
 
 void ScriptCollector::collectJS(QQmlScript::Object *node, const QString &data)
@@ -198,39 +244,6 @@ void ScriptCollector::collectJS(QQmlScript::Object *node, const QString &data)
         dslot = node->dynamicSlots.next(dslot);
     }
 }
-
-inline bool isLineTerminatorSequence(const QChar &c)
-{
-    switch (c.unicode()) {
-    case 0x000Au:
-    case 0x2028u:
-    case 0x2029u:
-    case 0x000Du:
-        return true;
-    default:
-        return false;
-    }
-}
-
-void mapOffsetToLineAndColumn(const QString &data, const quint32 &offset, quint16 &line, quint16 &column)
-{
-    line = 1;
-    column = 1;
-
-    if (data.length() <= (int)offset) {
-        return;
-    }
-
-    for (quint32 index = 0; index <= offset; ++index) {
-        ++column;
-        if (isLineTerminatorSequence(data.at(index))) {
-            ++line;
-            column = 1;
-        }
-    }
-}
-
-
 
 QDebug operator<<(QDebug dbg, const ScriptCollector::Script &script)
 {

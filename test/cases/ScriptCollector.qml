@@ -1,6 +1,10 @@
 import QtQuick 2.0
 
-QtObject {
+QtObject  // {}
+    /*   {}
+    
+
+{}*/ {
     id: root
     
     signal handler()
@@ -28,6 +32,7 @@ QtObject {
         return 0;
     }
     overideProp: 5 * 9/3.0; onHandler: {}
+    groupProp { one: 4; two: 4 * 2 * 1 }
     
     property var objectProp: QtObject { function inlineFunction() {} }
     property list<QtObject> arrayProp: [QtObject { function inlineListFunction() {} }, QtObject { }, QtObject { }]
