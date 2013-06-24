@@ -1,11 +1,5 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2013-03-09T16:50:21
-#
-#-------------------------------------------------
-
 TEMPLATE = app
-TARGET = tst_jslint
+TARGET = testrunner
 
 QT       += testlib v8 qml quick
 QT       -= gui
@@ -15,7 +9,7 @@ CONFIG   -= app_bundle
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
-SOURCES += tst_jslint.cpp
+SOURCES += testrunner.cpp
 
 include(../../src/src.pri)
 include(../../qml-privates.pri)

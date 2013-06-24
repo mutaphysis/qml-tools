@@ -7,18 +7,18 @@
 #include <jsinstrument.h>
 #include <qmlinstrumenttask.h>
 
-class JsLintTest : public QObject
+class TestRunner : public QObject
 {
     Q_OBJECT
     
 public:
-    JsLintTest() {}
+    TestRunner() {}
     
 private Q_SLOTS:
     void testScriptCollector();
-    void test2();
-    void test3();
-    void test4();
+    void testLint();
+    void testJsInstrument();
+    void testQmlInstrumentTask();
 };
 
 void testScript(
@@ -37,7 +37,7 @@ void testScript(
     QCOMPARE(script.location.end.column, endColumn);
 }
 
-void JsLintTest::testScriptCollector()
+void TestRunner::testScriptCollector()
 {
     QString filename = "test/cases/ScriptCollector.qml";
 
@@ -72,7 +72,7 @@ void JsLintTest::testScriptCollector()
     testScript(scripts.at(12), "childFunction", 45, 35, 47, 9);
 }
 
-void JsLintTest::test2()
+void TestRunner::testLint()
 {
     JsLint lint;
     QJsonDocument results = lint.lint("var a = 4 - eval('6'); \n print('hello')\nx = 4 == 3 + a;\n");
@@ -81,7 +81,7 @@ void JsLintTest::test2()
     QVERIFY(results.toJson().length() > 0);
 }
 
-void JsLintTest::test3()
+void TestRunner::testJsInstrument()
 {
     JsInstrument instrument;
     JsInstrument::Instrumented instrumented = instrument.instrument("{\n"
@@ -98,12 +98,12 @@ void JsLintTest::test3()
     QVERIFY(property.length() > 0);
 }
 
-void JsLintTest::test4()
+void TestRunner::testQmlInstrumentTask()
 {
     QmlInstrumentTask instrumenter;
     instrumenter.instrumentFile("test/cases/Coverage2.qml");
 }
 
 
-QTEST_MAIN(JsLintTest)
-#include "tst_jslint.moc"
+QTEST_MAIN(TestRunner)
+#include "testrunner.moc"
