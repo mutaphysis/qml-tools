@@ -62,6 +62,6 @@ void QmlCovPlugin::aboutToQuit()
         return;
     }
 
-    qDebug() << "\n" << results.toString();
+    qDebug().nospace() << "\n" << qPrintable(results.toString());
 }
 
