@@ -101,7 +101,13 @@ void TestRunner::testJsInstrument()
 void TestRunner::testQmlInstrumentTask()
 {
     QmlInstrumentTask instrumenter;
-    instrumenter.instrumentFile("test/cases/Coverage2.qml");
+    bool okay1 = instrumenter.instrumentFile("test/cases/Coverage.qml", "test/cases/Rewrite.qml");
+    bool okay2 = instrumenter.instrumentFile("test/cases/Coverage2.qml", "test/cases/Rewrite2.qml");
+
+    QVERIFY(okay1);
+    QVERIFY(okay2);
+
+    //instrumenter.instrumentFolder("test/", "demo/");
 }
 
 

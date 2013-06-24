@@ -7,7 +7,7 @@
 QT       += core v8 qml quick
 QT       -= gui
 
-TARGET = qml-lint
+TARGET = qml-tools
 
 CONFIG   += console
 CONFIG   -= app_bundle
