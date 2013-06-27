@@ -53,8 +53,14 @@ void TestRunner::testScriptCollector()
 
     QList<ScriptCollector::Script> scripts = collector.scripts();
 
+    // find 4th opening curly bracket
+    int index = 0;
+    for (int i = 0; i < 4; ++i) {
+        index = code.indexOf("{", index) + 1;
+    }
+
     QCOMPARE(scripts.length(), 13);
-    QCOMPARE(collector.objectStartOffset(), (quint32)60);
+    QCOMPARE(collector.objectStartOffset(), (quint32)index);
     QVERIFY(collector.errors().isEmpty());
 
     testScript(scripts.at(0), "firstFunction", 12, 30, 14, 5);
@@ -103,9 +109,11 @@ void TestRunner::testQmlInstrumentTask()
     QmlInstrumentTask instrumenter;
     bool okay1 = instrumenter.instrumentFile("test/cases/Coverage.qml", "test/cases/Rewrite.qml");
     bool okay2 = instrumenter.instrumentFile("test/cases/Coverage2.qml", "test/cases/Rewrite2.qml");
+    bool okay3 = instrumenter.instrumentFile("test/cases/Coverage.js", "test/cases/Rewrite.js");
 
     QVERIFY(okay1);
     QVERIFY(okay2);
+    QVERIFY(okay3);
 
     //instrumenter.instrumentFolder("test/", "demo/");
 }

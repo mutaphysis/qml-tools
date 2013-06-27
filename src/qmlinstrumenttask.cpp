@@ -6,6 +6,9 @@
 #include <QFile>
 #include <QDir>
 #include <QDirIterator>
+#include <QRegularExpression>
+
+#include <private/qqmlscript_p.h>
 
 #include "jsinstrument.h"
 #include "scriptcollector.h"
@@ -99,7 +102,15 @@ QString QmlInstrumentTask::instrumentFile(const QString &filename, bool &okay)
     QString code = QTextStream(&file).readAll();
     file.close();
 
-    return instrumentQml(code, filename, okay);
+    if (filename.endsWith(".qml")) {
+        return instrumentQml(code, filename, okay);
+    } else if (filename.endsWith(".js")) {
+        return instrumentJs(code, filename, okay);
+    }
+
+    qCritical() << "Cannot handle" << filename;
+    okay = false;
+    return QString();
 }
 
 QString QmlInstrumentTask::instrumentQml(const QString &code, const QString &filename, bool &okay)
@@ -114,14 +125,15 @@ QString QmlInstrumentTask::instrumentQml(const QString &code, const QString &fil
     }
 
     QList<ScriptCollector::Script> scripts = collector.scripts();
+
     QList<Replacement> replacements;
     QStringList properties; properties << "";
     foreach (ScriptCollector::Script script, scripts) {
 
-        QString code = script.code;
+        QString jsCode = script.code;
 
         JsInstrument::Instrumented instrumented = m_instrumenter->instrument(
-                    code,
+                    jsCode,
                     filename +
                     ":" + QString::number(script.location.start.line) +
                     ":" + QString::number(script.location.start.column),
@@ -151,6 +163,59 @@ QString QmlInstrumentTask::instrumentQml(const QString &code, const QString &fil
 
     okay = true;
     return results;
+}
+
+QString QmlInstrumentTask::instrumentJs(const QString &code, const QString &filename, bool &okay)
+{
+    QString jsCode = code;
+
+    // remove pragma and imports
+    QQmlError *error = 0;
+    QQmlScript::Parser::JavaScriptMetaData metadata = QQmlScript::Parser::extractMetaData(jsCode, error);
+
+    if (error) {
+        qCritical() << "Failed parsing" << filename << error->toString();
+        okay = false;
+        return QString();
+    }
+
+    // no js allowed before & between pragmas and imports
+    quint32 writeableLocation = 0;
+    foreach (QQmlScript::Import import, metadata.imports) {
+        writeableLocation = qMax(import.location.range.offset + import.location.range.length, writeableLocation);
+    }
+
+    // no access to the actual parsed locations of pragmas
+    QRegularExpression pragmaFinder(".pragma.+library");
+    QRegularExpressionMatch match = pragmaFinder.match(code, writeableLocation);
+    while (match.hasMatch()) {
+        writeableLocation = match.capturedEnd();
+        match = pragmaFinder.match(code, writeableLocation);
+    }
+
+    jsCode = code.mid(writeableLocation);
+    JsInstrument::Instrumented instrumented = m_instrumenter->instrument(
+                jsCode,
+                filename,
+                0,
+                0);
+
+
+    if (instrumented.code.isEmpty() || instrumented.preamble.isEmpty()) {
+        qCritical() << "Error instrumenting" << filename << jsCode;
+        okay = false;
+        return QString();
+    }
+
+    QStringList results;
+    results << code.mid(0, writeableLocation);
+    results << ".import QtCov 1.0 as QtCov"; // no semicolon for imports in js
+    results << instrumented.preamble;
+    results << instrumented.code;
+
+    QString result = results.join("\n\n");
+    okay = true;
+    return result;
 }
 
 QString QmlInstrumentTask::rewrite(

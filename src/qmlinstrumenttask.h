@@ -2,6 +2,7 @@
 #define QMLINSTRUMENTTASK_H
 
 #include <QObject>
+#include <QString>
 
 class JsInstrument;
 struct Replacement;
@@ -17,7 +18,7 @@ public:
     bool instrumentFile(const QString &in, const QString &out);
     QString instrumentFile(const QString &filename, bool &okay);
     QString instrumentQml(const QString &data, const QString &filename, bool &okay);
-
+    QString instrumentJs(const QString &code, const QString &filename, bool &okay);
 public slots:
     
 private:
