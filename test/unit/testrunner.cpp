@@ -110,10 +110,12 @@ void TestRunner::testQmlInstrumentTask()
     bool okay1 = instrumenter.instrumentFile("test/cases/Coverage.qml", "test/cases/Rewrite.qml");
     bool okay2 = instrumenter.instrumentFile("test/cases/Coverage2.qml", "test/cases/Rewrite2.qml");
     bool okay3 = instrumenter.instrumentFile("test/cases/Coverage.js", "test/cases/Rewrite.js");
+    bool okay4 = instrumenter.instrumentFile("test/cases/Coverage2.js", "test/cases/Rewrite2.js");
 
     QVERIFY(okay1);
     QVERIFY(okay2);
     QVERIFY(okay3);
+    QVERIFY(okay4);
 
     //instrumenter.instrumentFolder("test/", "demo/");
 }

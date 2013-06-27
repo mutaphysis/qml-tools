@@ -11,6 +11,10 @@ DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 SOURCES += testrunner.cpp
 
+OTHER_FILES += \
+    ../cases/*.js \
+    ../cases/*.qml
+
 include(../../src/src.pri)
 include(../../qml-privates.pri)
 
