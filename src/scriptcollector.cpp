@@ -19,24 +19,6 @@ inline bool isLineTerminatorSequence(const QChar &c)
     }
 }
 
-void mapOffsetToLineAndColumn(const QString &data, const quint32 &offset, quint16 &line, quint16 &column)
-{
-    line = 1;
-    column = 1;
-
-    if (data.length() <= (int)offset) {
-        return;
-    }
-
-    for (quint32 index = 0; index <= offset; ++index) {
-        ++column;
-        if (isLineTerminatorSequence(data.at(index))) {
-            ++line;
-            column = 1;
-        }
-    }
-}
-
 ScriptCollector::ScriptCollector() :
     m_objectStartOffset(0)
 {
@@ -249,6 +231,25 @@ void ScriptCollector::collectJS(QQmlScript::Object *node, const QString &data)
     }
 }
 
+void ScriptCollector::mapOffsetToLineAndColumn(const QString &data, const quint32 &offset, quint16 &line, quint16 &column)
+{
+    line = 1;
+    column = 1;
+
+    if (data.length() <= (int)offset) {
+        return;
+    }
+
+    for (quint32 index = 0; index <= offset; ++index) {
+        ++column;
+        if (isLineTerminatorSequence(data.at(index))) {
+            ++line;
+            column = 1;
+        }
+    }
+}
+
+
 QDebug operator<<(QDebug dbg, const ScriptCollector::Script &script)
 {
     dbg.nospace() << script.name << " ("
@@ -257,3 +258,4 @@ QDebug operator<<(QDebug dbg, const ScriptCollector::Script &script)
 
     return dbg.space();
 }
+

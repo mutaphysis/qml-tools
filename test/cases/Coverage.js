@@ -17,8 +17,12 @@
 
 print("test");
 
+function someCode() {
+	print("hallo")
+}
+
 function x() {
-	someCode;
+	someCode();
 
 	if (a == v) {
 		return;

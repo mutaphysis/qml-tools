@@ -194,12 +194,13 @@ QString QmlInstrumentTask::instrumentJs(const QString &code, const QString &file
     }
 
     jsCode = code.mid(writeableLocation);
+    quint16 line, column;
+    ScriptCollector::mapOffsetToLineAndColumn(code, writeableLocation, line, column);
     JsInstrument::Instrumented instrumented = m_instrumenter->instrument(
                 jsCode,
                 filename,
-                0,
-                0);
-
+                line,
+                column);
 
     if (instrumented.code.isEmpty() || instrumented.preamble.isEmpty()) {
         qCritical() << "Error instrumenting" << filename << jsCode;
