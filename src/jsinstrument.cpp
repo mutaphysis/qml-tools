@@ -98,6 +98,7 @@ JsInstrument::Instrumented JsInstrument::instrument(
 
 
     Instrumented result = {results.property("code").toString(),
-                           results.property("property").toString()};
+                           results.property("property").toString(),
+                           results.property("preamble").toString()};
     return result;
 }

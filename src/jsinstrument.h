@@ -12,6 +12,7 @@ public:
     struct Instrumented {
         QString code;
         QString property;
+        QString preamble;
     };
 
     JsInstrument(QObject *parent = 0);

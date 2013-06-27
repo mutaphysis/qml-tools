@@ -390,6 +390,7 @@
             //console.log(JSON.stringify(program, undefined, 2));
 
             return { property: this.getPropertyDefinition(code),
+                     preamble: this.getPreamble(code),
                      code: ESPGEN.generate(program, codegenOptions)
             };
         },
@@ -482,7 +483,7 @@
                 this.coverState.code = sourceCode.split(/\n/);
             }
             coverState = this.opts.debug ? JSON.stringify(this.coverState, undefined, 4) : JSON.stringify(this.coverState);
-            code = "readonly property var %VAR%: %GLOBAL%['%FILE%'] = %OBJECT%;"
+            code = "readonly property var %VAR%: %GLOBAL%['%FILE%'] ? %GLOBAL%['%FILE%'] : (%GLOBAL%['%FILE%'] = %OBJECT%);"
                 .replace(/%VAR%/g, replacer(tracker))
                 .replace(/%GLOBAL%/g, replacer(varName))
                 .replace(/%FILE%/g, replacer(file))
@@ -508,13 +509,11 @@
                 this.coverState.code = sourceCode.split(/\n/);
             }
             coverState = this.opts.debug ? JSON.stringify(this.coverState, undefined, 4) : JSON.stringify(this.coverState);
-            code = [
-                "if (typeof %GLOBAL% === 'undefined') { %GLOBAL% = {}; }",
-                "if (!%GLOBAL%['%FILE%']) {",
-                "   %GLOBAL%['%FILE%'] = %OBJECT%;",
-                "}",
-                "var %VAR% = %GLOBAL%['%FILE%'];"
-            ].join("\n")
+            code = ["if (!%GLOBAL%['%FILE%']) {",
+                    "   %GLOBAL%['%FILE%'] = %OBJECT%;",
+                    "}",
+                    "var %VAR% = %GLOBAL%['%FILE%'];"]
+                .join("\n")
                 .replace(/%VAR%/g, replacer(tracker))
                 .replace(/%GLOBAL%/g, replacer(varName))
                 .replace(/%FILE%/g, replacer(file))
