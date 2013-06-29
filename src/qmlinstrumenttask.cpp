@@ -24,6 +24,28 @@ QmlInstrumentTask::QmlInstrumentTask(QObject *parent) :
 {
 }
 
+bool QmlInstrumentTask::instrument(const QString &in, const QString &out)
+{
+    QFileInfo inDirInfo(in);
+
+    if (!inDirInfo.exists() || !inDirInfo.isReadable()) {
+        qCritical() << "Cannot read from" << in;
+        return false;
+    }
+
+    // no out path specified, use in path
+    QString outPath = out;
+    if (out.isEmpty()) {
+        outPath = in;
+    }
+
+    if (inDirInfo.isDir()) {
+        return instrumentFolder(in, outPath);
+    } else {
+        return instrumentFile(in, outPath);
+    }
+}
+
 bool QmlInstrumentTask::instrumentFolder(const QString &in, const QString &out)
 {
     QDir inDir(in);

@@ -14,6 +14,7 @@ class QmlInstrumentTask : public QObject
 public:
     explicit QmlInstrumentTask(QObject *parent = 0);
     
+    bool instrument(const QString &in, const QString &out);
     bool instrumentFolder(const QString &in, const QString &out);
     bool instrumentFile(const QString &in, const QString &out);
     QString instrumentFile(const QString &filename, bool &okay);
