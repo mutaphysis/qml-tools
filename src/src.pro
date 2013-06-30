@@ -17,7 +17,6 @@ SOURCES += main.cpp
 
 LIBS += -lboost_program_options-mt
 
-
 include(src.pri)
 include(../qml-privates.pri)
 
