@@ -23,10 +23,13 @@ public:
                                           const uint lineOffset = 0,
                                           const uint columnOffset = 0);
 
+    QString initialCoverageData();
 private:
     bool setup();
 
-    QJSEngine m_engine;
+    QJSEngine m_engine;    
+    QJSValue m_coverageData;
+    QJSValue m_instrumenterInstance;
 };
 
 #endif // JSINSTRUMENT_H

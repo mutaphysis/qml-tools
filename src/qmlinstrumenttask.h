@@ -17,11 +17,14 @@ public:
     bool instrument(const QString &in, const QString &out);
     bool instrumentFolder(const QString &in, const QString &out);
     bool instrumentFile(const QString &in, const QString &out);
+
     QString instrumentFile(const QString &filename, bool &okay);
     QString instrumentQml(const QString &data, const QString &filename, bool &okay);
     QString instrumentJs(const QString &code, const QString &filename, bool &okay);
-public slots:
-    
+
+    QString initialCoverageData();
+    bool saveInitialCoverageData(const QString &out);
+
 private:
     QString rewrite(const QString &originalContents,
                     const QList<Replacement> &replacements);

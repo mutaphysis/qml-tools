@@ -33,4 +33,6 @@ int main(int argc, char *argv[])
     instrumenter.instrument(
             QString::fromStdString(vm["input"].as<std::string>()),
             QString::fromStdString(vm["output"].as<std::string>()));
+
+    instrumenter.saveInitialCoverageData("coverage_data.json");
 }

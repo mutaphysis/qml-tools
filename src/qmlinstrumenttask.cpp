@@ -241,6 +241,27 @@ QString QmlInstrumentTask::instrumentJs(const QString &code, const QString &file
     return result;
 }
 
+QString QmlInstrumentTask::initialCoverageData()
+{
+    return m_instrumenter->initialCoverageData();
+}
+
+bool QmlInstrumentTask::saveInitialCoverageData(const QString &out)
+{
+    QFile outFile(out);
+    if (!outFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        qCritical() << "Cannot write" << out << ":" << outFile.errorString();
+        return false;
+    }
+
+    QTextStream stream( &outFile );
+    stream << initialCoverageData();
+    outFile.close();
+
+    qDebug() << "Wrote" << out << "successfully";
+    return true;
+}
+
 QString QmlInstrumentTask::rewrite(
         const QString &originalContents,
         const QList<Replacement> &replacements)
