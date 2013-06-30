@@ -15,6 +15,9 @@ public:
 
 private slots:
     void aboutToQuit();
+
+private:
+    static QString coverageFilePath();
 };
 
 #endif // QML_COV_PLUGIN_H

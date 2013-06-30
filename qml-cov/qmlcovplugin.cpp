@@ -2,8 +2,10 @@
 
 #include <QCoreApplication>
 #include <QQmlEngine>
+#include <QFileInfo>
 #include <QJSValue>
 #include <QDebug>
+#include <QDir>
 
 #include <qqml.h>
 
@@ -32,6 +34,8 @@ void QmlCovPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
 {
     Q_UNUSED(engine);
     Q_UNUSED(uri);
+
+    qDebug() << coverageFilePath();
 
     connect(QCoreApplication::instance(),
             SIGNAL(aboutToQuit()),
@@ -63,5 +67,36 @@ void QmlCovPlugin::aboutToQuit()
     }
 
     qDebug().nospace() << "\n" << qPrintable(results.toString());
+}
+
+QString QmlCovPlugin::coverageFilePath()
+{
+    QString envPath = qgetenv("QTCOV_COVERAGE_DATA_PATH");
+
+    if (!envPath.isEmpty()) {
+        QFileInfo envInfo(envPath);
+        if (envInfo.exists() && envInfo.isReadable() && envInfo.isWritable()) {
+            return envPath;
+        }
+        qCritical() << "Could not use configuration from" << envPath;
+    }
+
+    QString defaultName = "coverage_data.json";
+
+    QFileInfo currentDirInfo(defaultName);
+    if (currentDirInfo.exists() && currentDirInfo.isReadable() && currentDirInfo.isWritable()) {
+        return QDir::current().absoluteFilePath(defaultName);
+    } else {
+        qCritical() << "Could not use configuration from" << QDir::current().absoluteFilePath(defaultName);
+    }
+
+    QFileInfo appDirInfo(QDir(QCoreApplication::applicationDirPath()).absoluteFilePath(defaultName));
+    if (appDirInfo.exists() && appDirInfo.isReadable() && appDirInfo.isWritable()) {
+        return appDirInfo.absoluteFilePath();
+    } else {
+        qCritical() << "Could not use configuration from" << appDirInfo.absoluteFilePath();
+    }
+
+    return defaultName;
 }
 
