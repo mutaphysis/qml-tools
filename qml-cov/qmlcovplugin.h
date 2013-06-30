@@ -13,11 +13,15 @@ public:
     void registerTypes(const char *uri);
     void initializeEngine(QQmlEngine *engine, const char *uri);
 
+    static QJSValue loadCoverageData(QJSEngine *scriptEngine);
+    static bool saveCoverageData(QJSEngine *scriptEngine);
 private slots:
     void aboutToQuit();
 
 private:
     static QString coverageFilePath();
+    static bool jsStringify(QJSEngine *engine, const QJSValue &value, QString &content);
+    static bool jsParse(QJSEngine *engine, const QString &content, QJSValue &value);
 };
 
 #endif // QML_COV_PLUGIN_H
