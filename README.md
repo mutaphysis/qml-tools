@@ -140,3 +140,18 @@ To
 
     {"test/cases/Coverage.qml:8:25":{"path":"test/cases/Coverage.qml:8:25","s":{"1":1,"2":0,"3":1},"b":{"1":[0,1]},"f":{},"fnMap":{},"statementMap":{"1":{"start":{"line":8,"column":27},"end":{"line":8,"column":57}},"2":{"start":{"line":8,"column":43},"end":{"line":8,"column":45}},"3":{"start":{"line":8,"column":54},"end":{"line":8,"column":56}}},"branchMap":{"1":{"line":8,"type":"if","locations":[{"start":{"line":8,"column":27},"end":{"line":8,"column":27}},{"start":{"line":8,"column":27},"end":{"line":8,"column":27}}]}}}}
 
+### Running qml-tools
+
+    qml-tools
+    
+    Instruments qml files for collecting coverage data
+    
+    Allowed options:
+      --help                shows this help message
+      -i [ --input ] arg    input file or folder
+      -o [ --output ] arg   output file or folder
+
+
+    qml-tools -i Test.qml -o Rewritten.qml
+    qml-tools -i some/folder/
+    
