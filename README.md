@@ -5,7 +5,7 @@ The QML Tools aims to provide several tools that help keeping the quality of lar
 ## Prerequisites
 
  * boost-progam-options
-   * eg. @apt-get install boost-progam-options-dev@ or @brew install boost@
+   * eg. `apt-get install boost-progam-options-dev` or `brew install boost`
  * private qt headers
  * before running instrumented code, the QtCov qml plugin needs to be installed
 
