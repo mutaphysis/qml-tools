@@ -15,8 +15,9 @@ public:
 
     static QJSValue loadCoverageData(QJSEngine *scriptEngine);
     static bool saveCoverageData(QJSEngine *scriptEngine);
+
 private slots:
-    void aboutToQuit();
+    void save();
 
 private:
     static QString coverageFilePath();

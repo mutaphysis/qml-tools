@@ -12,7 +12,7 @@
 QJSValue g_coverageData;
 QQmlEngine *g_engine;
 
-static QJSValue example_qjsvalue_singletontype_provider(QQmlEngine *engine, QJSEngine *scriptEngine)
+static QJSValue coverage_singletontype_provider(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine)
 
@@ -27,7 +27,7 @@ static QJSValue example_qjsvalue_singletontype_provider(QQmlEngine *engine, QJSE
 
 void QmlCovPlugin::registerTypes(const char *uri)
 {    
-    qmlRegisterSingletonType(uri, 1, 0, "coverage", example_qjsvalue_singletontype_provider);
+    qmlRegisterSingletonType(uri, 1, 0, "coverage", coverage_singletontype_provider);
 }
 
 void QmlCovPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
@@ -37,11 +37,16 @@ void QmlCovPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
 
     connect(QCoreApplication::instance(),
             SIGNAL(aboutToQuit()),
-            SLOT(aboutToQuit()),
+            SLOT(save()),
+            Qt::DirectConnection);
+
+    connect(engine,
+            SIGNAL(quit()),
+            SLOT(save()),
             Qt::DirectConnection);
 }
 
-void QmlCovPlugin::aboutToQuit()
+void QmlCovPlugin::save()
 {    
     bool okay = QmlCovPlugin::saveCoverageData(g_engine);
 
@@ -137,6 +142,9 @@ QString QmlCovPlugin::coverageFilePath()
 
 bool QmlCovPlugin::saveCoverageData(QJSEngine *scriptEngine)
 {
+    Q_ASSERT(scriptEngine);
+    Q_ASSERT(!g_coverageData.isUndefined());
+
     QString path = QmlCovPlugin::coverageFilePath();
 
     QString content;
