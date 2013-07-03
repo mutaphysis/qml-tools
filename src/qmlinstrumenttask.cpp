@@ -49,12 +49,7 @@ bool QmlInstrumentTask::instrument(const QString &in, const QString &out)
 bool QmlInstrumentTask::instrumentFolder(const QString &in, const QString &out)
 {
     QDir inDir(in);
-    QDir outDir(out); QFileInfo outDirInfo(out);
-
-    if (!outDir.exists() || !outDirInfo.isWritable()) {
-        qCritical() << "Cannot write to folder" << out;
-        return false;
-    }
+    QDir outDir(out);
 
     QList<QFileInfo> entries;
     QDirIterator iterator(inDir, QDirIterator::Subdirectories);
@@ -69,14 +64,16 @@ bool QmlInstrumentTask::instrumentFolder(const QString &in, const QString &out)
     }
 
     foreach (QFileInfo fileinfo, entries) {
-        bool okay = outDir.mkpath(fileinfo.path());
 
+        QFileInfo relativePath(fileinfo.canonicalFilePath().mid(inDir.canonicalPath().length() + 1));
+
+        bool okay = outDir.mkpath(relativePath.path());
         if (!okay) {
-            qCritical() << "Could not create folder" << fileinfo.absolutePath();
+            qCritical() << "Could not create folder" << relativePath.dir();
             return false;
         }
 
-        okay = instrumentFile(fileinfo.filePath(), outDir.filePath(fileinfo.filePath()));
+        okay = instrumentFile(fileinfo.filePath(), outDir.filePath(relativePath.filePath()));
 
         if (!okay) {
             return false;
