@@ -28,30 +28,36 @@ Also a base coverage_data.json file is generated that will be filled during runt
 
 #### Example
 
-```json
-    import QtQuick 2.0
+```javascript
+import QtQuick 2.0
+
+Item {
+    id: root
+    width: 100
+    height: 100
     
-    Item {
-        id: root
-        width: 100
-        height: 100
-        
-        property int value: { if (test > 5) { 1 } else { 2 } }
-        property int test: 1
-    }
+    property int value: { if (test > 5) { 1 } else { 2 } }
+    property int test: 1
+}
 ```
 
 A simple QML file with one binding
    
-    { if (test > 5) { 1 } else { 2 } }
+```javascript   
+{ if (test > 5) { 1 } else { 2 } }
+```
 
 Instrumenting this binding yields the following code
 
-    {__cov_1.s['1']++;if(test>5){__cov_1.b['1'][0]++;__cov_1.s['2']++;1;}else{__cov_1.b['1'][1]++;__cov_1.s['3']++;2;}}
-   
+```javascript  
+{__cov_1.s['1']++;if(test>5){__cov_1.b['1'][0]++;__cov_1.s['2']++;1;}else{__cov_1.b['1'][1]++;__cov_1.s['3']++;2;}}
+```    
+
 Also a new property is added
 
-    readonly property var __cov_1: QtCov.coverage.data['test/cases/Coverage.qml:8:25'] ? QtCov.coverage.data['test/cases/Coverage.qml:8:25'] : (QtCov.coverage.data['test/cases/Coverage.qml:8:25'] = {"path":"test/cases/Coverage.qml:8:25","s":{"1":0,"2":0,"3":0},"b":{"1":[0,0]},"f":{},"fnMap":{},"statementMap":{"1":{"start":{"line":8,"column":27},"end":{"line":8,"column":57}},"2":{"start":{"line":8,"column":43},"end":{"line":8,"column":45}},"3":{"start":{"line":8,"column":54},"end":{"line":8,"column":56}}},"branchMap":{"1":{"line":8,"type":"if","locations":[{"start":{"line":8,"column":27},"end":{"line":8,"column":27}},{"start":{"line":8,"column":27},"end":{"line":8,"column":27}}]}}});
+```javascript  
+readonly property var __cov_1: QtCov.coverage.data['test/cases/Coverage.qml:8:25'] ? QtCov.coverage.data['test/cases/Coverage.qml:8:25'] : (QtCov.coverage.data['test/cases/Coverage.qml:8:25'] = {"path":"test/cases/Coverage.qml:8:25","s":{"1":0,"2":0,"3":0},"b":{"1":[0,0]},"f":{},"fnMap":{},"statementMap":{"1":{"start":{"line":8,"column":27},"end":{"line":8,"column":57}},"2":{"start":{"line":8,"column":43},"end":{"line":8,"column":45}},"3":{"start":{"line":8,"column":54},"end":{"line":8,"column":56}}},"branchMap":{"1":{"line":8,"type":"if","locations":[{"start":{"line":8,"column":27},"end":{"line":8,"column":27}},{"start":{"line":8,"column":27},"end":{"line":8,"column":27}}]}}});
+```    
     
 And a plugin is added at the top
     
