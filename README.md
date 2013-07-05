@@ -1,40 +1,22 @@
 # QML Tools
 
-The QML Tools aims to provide several tools that help keeping the quality of large QML based applications high.
+QML Tools provide a set of tools that help keeping the quality of large QML based applications high.
 
-## Prerequisites
-
- * boost-progam-options
-   * eg. `apt-get install boost-progam-options-dev` or `brew install boost`
- * private qt headers
- * before running instrumented code, the QtCov qml plugin needs to be installed
-
-## Running qml-tools
-
-    qml-tools
-    
-    Instruments qml files for collecting coverage data
-    
-    Allowed options:
-      --help                shows this help message
-      -i [ --input ] arg    input file or folder
-      -o [ --output ] arg   output file or folder
+The first tool is QtCov, a combination of an instrumenter and a qml plugin for collecting runtime coverage data for QML applications.
 
 
-    qml-tools -i Test.qml -o Rewritten.qml
-    qml-tools -i some/folder/
-
-## Inner workings of QtCov
+## QtCov
 
 QtCov is a coverage solution for the javascript code contained in QML files and their attached JavaScript files.
 
 QtCov consist out of two parts, the QtCov QML Plugin and the instrumented task in the qml-tools binary.
 
+
 ### Instrumenting QML files
 
 QtCov uses the private  Qt APIs in QQmlScript for parsing the QML files and analyzing the defined properties.
 
-The list of properties containing JS bindings, signal handler and internal functions is then passed into istanbul (TODO link) which creates the instrumented version of the source. 
+The list of properties containing JS bindings, signal handler and internal functions is then passed into istanbul ( http://gotwarlost.github.io/istanbul/ ) which creates the instrumented version of the source. 
 
 All properties with bindings are instrumented, even the ones possibly using QV4Bindings or QCompiledBindings.
 
