@@ -28,6 +28,7 @@ Also a base coverage_data.json file is generated that will be filled during runt
 
 #### Example
 
+```json
     import QtQuick 2.0
     
     Item {
@@ -38,6 +39,7 @@ Also a base coverage_data.json file is generated that will be filled during runt
         property int value: { if (test > 5) { 1 } else { 2 } }
         property int test: 1
     }
+```
 
 A simple QML file with one binding
    
@@ -138,9 +140,12 @@ After the QML and JS files have been instrumented, the application can be run no
 
 The initial coverage file changes from
 
-    {"test/cases/Coverage.qml:8:25":{"path":"test/cases/Coverage.qml:8:25","s":{"1":0,"2":0,"3":0},"b":{"1":[0,0]},"f":{},"fnMap":{},"statementMap":{"1":{"start":{"line":8,"column":27},"end":{"line":8,"column":57}},"2":{"start":{"line":8,"column":43},"end":{"line":8,"column":45}},"3":{"start":{"line":8,"column":54},"end":{"line":8,"column":56}}},"branchMap":{"1":{"line":8,"type":"if","locations":[{"start":{"line":8,"column":27},"end":{"line":8,"column":27}},{"start":{"line":8,"column":27},"end":{"line":8,"column":27}}]}}}}
+```json
+{"test/cases/Coverage.qml:8:25":{"path":"test/cases/Coverage.qml:8:25","s":{"1":0,"2":0,"3":0},"b":{"1":[0,0]},"f":{},"fnMap":{},"statementMap":{"1":{"start":{"line":8,"column":27},"end":{"line":8,"column":57}},"2":{"start":{"line":8,"column":43},"end":{"line":8,"column":45}},"3":{"start":{"line":8,"column":54},"end":{"line":8,"column":56}}},"branchMap":{"1":{"line":8,"type":"if","locations":[{"start":{"line":8,"column":27},"end":{"line":8,"column":27}},{"start":{"line":8,"column":27},"end":{"line":8,"column":27}}]}}}}
+```
 
 To
 
-    {"test/cases/Coverage.qml:8:25":{"path":"test/cases/Coverage.qml:8:25","s":{"1":1,"2":0,"3":1},"b":{"1":[0,1]},"f":{},"fnMap":{},"statementMap":{"1":{"start":{"line":8,"column":27},"end":{"line":8,"column":57}},"2":{"start":{"line":8,"column":43},"end":{"line":8,"column":45}},"3":{"start":{"line":8,"column":54},"end":{"line":8,"column":56}}},"branchMap":{"1":{"line":8,"type":"if","locations":[{"start":{"line":8,"column":27},"end":{"line":8,"column":27}},{"start":{"line":8,"column":27},"end":{"line":8,"column":27}}]}}}}
-    
+```json
+{"test/cases/Coverage.qml:8:25":{"path":"test/cases/Coverage.qml:8:25","s":{"1":1,"2":0,"3":1},"b":{"1":[0,1]},"f":{},"fnMap":{},"statementMap":{"1":{"start":{"line":8,"column":27},"end":{"line":8,"column":57}},"2":{"start":{"line":8,"column":43},"end":{"line":8,"column":45}},"3":{"start":{"line":8,"column":54},"end":{"line":8,"column":56}}},"branchMap":{"1":{"line":8,"type":"if","locations":[{"start":{"line":8,"column":27},"end":{"line":8,"column":27}},{"start":{"line":8,"column":27},"end":{"line":8,"column":27}}]}}}}
+```    
