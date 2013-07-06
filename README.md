@@ -60,69 +60,77 @@ readonly property var __cov_1: QtCov.coverage.data['test/cases/Coverage.qml:8:25
 ```    
     
 And a plugin is added at the top
-    
-    import QtCov 1.0 as QtCov
-    
+  
+```javascript    
+import QtCov 1.0 as QtCov
+```  
+
 Leading to the following file
 
-    import QtCov 1.0 as QtCov; import QtQuick 2.0
+```javascript  
+import QtCov 1.0 as QtCov; import QtQuick 2.0
 
-    Item {
-        readonly property var __cov_1: QtCov.coverage.data['test/cases/Coverage.qml:8:25'] ? QtCov.coverage.data['test/cases/Coverage.qml:8:25'] : (QtCov.coverage.data['test/cases/Coverage.qml:8:25'] = {"path":"test/cases/Coverage.qml:8:25","s":{"1":0,"2":0,"3":0},"b":{"1":[0,0]},"f":{},"fnMap":{},"statementMap":{"1":{"start":{"line":8,"column":27},"end":{"line":8,"column":57}},"2":{"start":{"line":8,"column":43},"end":{"line":8,"column":45}},"3":{"start":{"line":8,"column":54},"end":{"line":8,"column":56}}},"branchMap":{"1":{"line":8,"type":"if","locations":[{"start":{"line":8,"column":27},"end":{"line":8,"column":27}},{"start":{"line":8,"column":27},"end":{"line":8,"column":27}}]}}});
+Item {
+    readonly property var __cov_1: QtCov.coverage.data['test/cases/Coverage.qml:8:25'] ? QtCov.coverage.data['test/cases/Coverage.qml:8:25'] : (QtCov.coverage.data['test/cases/Coverage.qml:8:25'] = {"path":"test/cases/Coverage.qml:8:25","s":{"1":0,"2":0,"3":0},"b":{"1":[0,0]},"f":{},"fnMap":{},"statementMap":{"1":{"start":{"line":8,"column":27},"end":{"line":8,"column":57}},"2":{"start":{"line":8,"column":43},"end":{"line":8,"column":45}},"3":{"start":{"line":8,"column":54},"end":{"line":8,"column":56}}},"branchMap":{"1":{"line":8,"type":"if","locations":[{"start":{"line":8,"column":27},"end":{"line":8,"column":27}},{"start":{"line":8,"column":27},"end":{"line":8,"column":27}}]}}});
         
     
-        id: root
-        width: 100
-        height: 100
+    id: root
+    width: 100
+    height: 100
         
-        property int value: {__cov_1.s['1']++;if(test>5){__cov_1.b['1'][0]++;__cov_1.s['2']++;1;}else{__cov_1.b['1'][1]++;__cov_1.s['3']++;2;}}
-        property int test: 1
-    }    
-    
+    property int value: {__cov_1.s['1']++;if(test>5){__cov_1.b['1'][0]++;__cov_1.s['2']++;1;}else{__cov_1.b['1'][1]++;__cov_1.s['3']++;2;}}
+    property int test: 1
+}    
+```
+
 The **coverage_data.json** contains the same mapping
 
-    {"path":"test/cases/Coverage.qml:8:25","s":{"1":0,"2":0,"3":0},"b":{"1":[0,0]},"f":{},"fnMap":{},"statementMap":{"1":{"start":{"line":8,"column":27},"end":{"line":8,"column":57}},"2":{"start":{"line":8,"column":43},"end":{"line":8,"column":45}},"3":{"start":{"line":8,"column":54},"end":{"line":8,"column":56}}},"branchMap":{"1":{"line":8,"type":"if","locations":[{"start":{"line":8,"column":27},"end":{"line":8,"column":27}},{"start":{"line":8,"column":27},"end":{"line":8,"column":27}}]}}}
-        
+```javascript  
+{"path":"test/cases/Coverage.qml:8:25","s":{"1":0,"2":0,"3":0},"b":{"1":[0,0]},"f":{},"fnMap":{},"statementMap":{"1":{"start":{"line":8,"column":27},"end":{"line":8,"column":57}},"2":{"start":{"line":8,"column":43},"end":{"line":8,"column":45}},"3":{"start":{"line":8,"column":54},"end":{"line":8,"column":56}}},"branchMap":{"1":{"line":8,"type":"if","locations":[{"start":{"line":8,"column":27},"end":{"line":8,"column":27}},{"start":{"line":8,"column":27},"end":{"line":8,"column":27}}]}}}
+```
+
 When JS files get instrumented, similar things are happening.
 
 
-    .pragma library
+```javascript  
+.pragma library
     
     
-    print("test");
+print("test");
     
     
-    function someCode() {
-        print("bye");
+function someCode() {
+    print("bye");
+}
+    
+    
+function x() {
+    someCode();
+    
+    if (a == v) {
+    	return;
     }
-    
-    
-    function x() {
-    	someCode();
-    
-    	if (a == v) {
-    		return;
-    	}
-    }
-    
-    
-    var a = 0;
-    var v = 10;
-    
+}
+        
+var a = 0;
+var v = 10;
+```    
     
 Gets instrumented to
 
-    .pragma library
+```javascript  
+.pragma library
     
-    .import QtCov 1.0 as QtCov
+.import QtCov 1.0 as QtCov
     
-    if (!QtCov.coverage.data['test/cases/Coverage.js']) {
-       QtCov.coverage.data['test/cases/Coverage.js'] = {"path":"test/cases/Coverage.js","s":{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},"b":{"1":[0,0]},"f":{"1":0,"2":0},"fnMap":{"1":{"name":"someCode","line":8,"loc":{"start":{"line":8,"column":0},"end":{"line":8,"column":20}}},"2":{"name":"x","line":13,"loc":{"start":{"line":13,"column":0},"end":{"line":13,"column":13}}}},"statementMap":{"1":{"start":{"line":5,"column":0},"end":{"line":5,"column":14}},"2":{"start":{"line":8,"column":0},"end":{"line":10,"column":1}},"3":{"start":{"line":9,"column":4},"end":{"line":9,"column":17}},"4":{"start":{"line":13,"column":0},"end":{"line":19,"column":1}},"5":{"start":{"line":14,"column":1},"end":{"line":14,"column":12}},"6":{"start":{"line":16,"column":1},"end":{"line":18,"column":2}},"7":{"start":{"line":17,"column":2},"end":{"line":17,"column":9}},"8":{"start":{"line":22,"column":0},"end":{"line":22,"column":10}},"9":{"start":{"line":23,"column":0},"end":{"line":23,"column":11}}},"branchMap":{"1":{"line":16,"type":"if","locations":[{"start":{"line":16,"column":1},"end":{"line":16,"column":1}},{"start":{"line":16,"column":1},"end":{"line":16,"column":1}}]}}};
-    }
-    var __cov_7 = QtCov.coverage.data['test/cases/Coverage.js'];
-    
-    __cov_7.s['1']++;print('test');__cov_7.s['2']++;function someCode(){__cov_7.f['1']++;__cov_7.s['3']++;print('bye');}__cov_7.s['4']++;function x(){__cov_7.f['2']++;__cov_7.s['5']++;someCode();__cov_7.s['6']++;if(a==v){__cov_7.b['1'][0]++;__cov_7.s['7']++;return;}else{__cov_7.b['1'][1]++;}}__cov_7.s['8']++;var a=0;__cov_7.s['9']++;var v=10;%      
-                
+if (!QtCov.coverage.data['test/cases/Coverage.js']) {
+   QtCov.coverage.data['test/cases/Coverage.js'] = {"path":"test/cases/Coverage.js","s":{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},"b":{"1":[0,0]},"f":{"1":0,"2":0},"fnMap":{"1":{"name":"someCode","line":8,"loc":{"start":{"line":8,"column":0},"end":{"line":8,"column":20}}},"2":{"name":"x","line":13,"loc":{"start":{"line":13,"column":0},"end":{"line":13,"column":13}}}},"statementMap":{"1":{"start":{"line":5,"column":0},"end":{"line":5,"column":14}},"2":{"start":{"line":8,"column":0},"end":{"line":10,"column":1}},"3":{"start":{"line":9,"column":4},"end":{"line":9,"column":17}},"4":{"start":{"line":13,"column":0},"end":{"line":19,"column":1}},"5":{"start":{"line":14,"column":1},"end":{"line":14,"column":12}},"6":{"start":{"line":16,"column":1},"end":{"line":18,"column":2}},"7":{"start":{"line":17,"column":2},"end":{"line":17,"column":9}},"8":{"start":{"line":22,"column":0},"end":{"line":22,"column":10}},"9":{"start":{"line":23,"column":0},"end":{"line":23,"column":11}}},"branchMap":{"1":{"line":16,"type":"if","locations":[{"start":{"line":16,"column":1},"end":{"line":16,"column":1}},{"start":{"line":16,"column":1},"end":{"line":16,"column":1}}]}}};
+}
+
+var __cov_7 = QtCov.coverage.data['test/cases/Coverage.js'];
+
+__cov_7.s['1']++;print('test');__cov_7.s['2']++;function someCode(){__cov_7.f['1']++;__cov_7.s['3']++;print('bye');}__cov_7.s['4']++;function x(){__cov_7.f['2']++;__cov_7.s['5']++;someCode();__cov_7.s['6']++;if(a==v){__cov_7.b['1'][0]++;__cov_7.s['7']++;return;}else{__cov_7.b['1'][1]++;}}__cov_7.s['8']++;var a=0;__cov_7.s['9']++;var v=10;%      
+```                
     
 ### The QtCov QML plugin
 
