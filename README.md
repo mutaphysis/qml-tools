@@ -9,7 +9,7 @@ The first tool is QtCov, a combination of an instrumenter and a qml plugin for c
 
 QtCov is a coverage solution for the javascript code contained in QML files and their attached JavaScript files.
 
-QtCov consist out of two parts, the QtCov QML Plugin and the instrumented task in the qml-tools binary.
+QtCov consist out of two parts, the QtCov QML Plugin and the instrumentation task in the qml-tools binary.
 
 
 ### Instrumenting QML files
@@ -20,9 +20,9 @@ The list of properties containing JS bindings, signal handler and internal funct
 
 All properties with bindings are instrumented, even the ones possibly using QV4Bindings or QCompiledBindings.
 
-An internal mapper containing the coverage data is created, and injected to the header of the file.
+A property containing the mapping of coverage to line data is created, and injected to the top of the component.
 
-Additionally a new QML plugin is added to the top of the QML file, this will be explained in the second part.
+Additionally a new QML plugin is added to the top of the QML file, for gathering runtime coverage data, this will be explained in the second part.
 
 Also a base coverage_data.json file is generated that will be filled during runtime. The js-code lines/columns are mapped to QML file line/columns for this file. This is done to prevent skipping files that are missed during runtime (eg. not loaded or touched at all).
 
@@ -53,7 +53,7 @@ Instrumenting this binding yields the following code
 {__cov_1.s['1']++;if(test>5){__cov_1.b['1'][0]++;__cov_1.s['2']++;1;}else{__cov_1.b['1'][1]++;__cov_1.s['3']++;2;}}
 ```    
 
-Also a new property is added
+A new property is added
 
 ```javascript  
 readonly property var __cov_1: QtCov.coverage.data['test/cases/Coverage.qml:8:25'] ? QtCov.coverage.data['test/cases/Coverage.qml:8:25'] : (QtCov.coverage.data['test/cases/Coverage.qml:8:25'] = {"path":"test/cases/Coverage.qml:8:25","s":{"1":0,"2":0,"3":0},"b":{"1":[0,0]},"f":{},"fnMap":{},"statementMap":{"1":{"start":{"line":8,"column":27},"end":{"line":8,"column":57}},"2":{"start":{"line":8,"column":43},"end":{"line":8,"column":45}},"3":{"start":{"line":8,"column":54},"end":{"line":8,"column":56}}},"branchMap":{"1":{"line":8,"type":"if","locations":[{"start":{"line":8,"column":27},"end":{"line":8,"column":27}},{"start":{"line":8,"column":27},"end":{"line":8,"column":27}}]}}});
