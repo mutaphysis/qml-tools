@@ -57,7 +57,7 @@ bool QmlInstrumentTask::instrumentFolder(const QString &in, const QString &out)
         iterator.next();
         QFileInfo fileinfo = iterator.fileInfo();
         if (!fileinfo.isDir()) {
-            if (fileinfo.suffix() == "qml" /*|| fileinfo.suffix() == "js"*/) {
+            if (fileinfo.suffix() == "qml" || fileinfo.suffix() == "js") {
                 entries << fileinfo;
             }
         }
