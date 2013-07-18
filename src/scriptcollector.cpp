@@ -5,6 +5,8 @@
 #include <private/qqmldata_p.h>
 #include <private/qqmltypeloader_p.h>
 #include <private/qqmlscript_p.h>
+#include <private/qqmljsast_p.h>
+#include <private/qqmljsastvisitor_p.h>
 
 inline bool isLineTerminatorSequence(const QChar &c)
 {
@@ -77,7 +79,7 @@ inline QString toString(const QHashedStringRef& ref)
 
 // This is really ugly, should use the real parser instead... but no internal access
 void ScriptCollector::determineObjectStartOffset(const QString &data, QQmlScript::Object *node)
-{    
+{
     static QLatin1Char CHAR_SLASH('/');
     static QLatin1Char CHAR_STAR('*');
     static QLatin1Char CHAR_CURLY_OPEN('{');
@@ -178,20 +180,39 @@ void ScriptCollector::collectJS(QQmlScript::Object *node, const QString &data)
             while (value != 0) {
 
                 if (value->value.isScript()) {
-                    // qDebug().nospace() << ">>>>> " << toString(dprop->name) << " ("
-                    //                   << value->location.start.line << ":" << value->location.start.column << " to "
-                    //                   << value->location.end.line << ":" << value->location.end.column << ")";
 
-                    // Javascript ->
-                    // qDebug() << value->value.asScript();
+                    int kind = 0;
+                    if (value->value.asAST()) {
+                        kind = value->value.asAST()->kind;
+                    }
 
-                    Script script = {toString(dprop->name),
-                                     value->value.asScript(),
-                                     ScriptCollector::Property,
-                                     { { value->location.start.line, value->location.start.column },
-                                       { value->location.end.line, value->location.end.column },
-                                       { value->location.range.offset, value->location.range.length } } };
-                    m_scripts.append(script);
+                    // do not append ObjectLiterals
+                    if (kind != QQmlJS::AST::Node::Kind_ObjectLiteral) {
+
+                        // qDebug().nospace() << ">>>>> " << toString(dprop->name) << " ("
+                        //                   << value->location.start.line << ":" << value->location.start.column << " to "
+                        //                   << value->location.end.line << ":" << value->location.end.column << ")";
+
+                        // Javascript ->
+                        // qDebug() << value->value.asScript();
+
+                        qDebug() << kind;
+
+                        ScriptCollector::Type type = ScriptCollector::Property;
+
+                        if (kind == QQmlJS::AST::Node::Kind_FunctionExpression) {
+                            type = ScriptCollector::AnonymousFunctionProperty;
+                        }
+
+                        Script script = {toString(dprop->name),
+                                         value->value.asScript(),
+                                         type,
+                                         { { value->location.start.line, value->location.start.column },
+                                           { value->location.end.line, value->location.end.column },
+                                           { value->location.range.offset, value->location.range.length } } };
+                        m_scripts.append(script);
+
+                    }
                 }
 
                 value = prop->values.next(value);

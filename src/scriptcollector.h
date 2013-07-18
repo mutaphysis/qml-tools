@@ -30,7 +30,8 @@ class ScriptCollector
 public:
     enum Type {
         Property,
-        Function
+        Function,
+        AnonymousFunctionProperty
     };
 
     struct LocationRange
@@ -49,12 +50,12 @@ public:
             return line < other.line ||
                    (line == other.line && column < other.column);
         }
-    };  
+    };
 
     struct LocationSpan
     {
         Location start;
-        Location end;        
+        Location end;
         LocationRange range;
 
         inline bool operator<(const LocationSpan &o) const
@@ -68,7 +69,7 @@ public:
         QString name;
         QString code;
         Type type;
-        LocationSpan location;        
+        LocationSpan location;
 
         bool operator<(const Script &o) const
         {
