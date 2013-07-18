@@ -121,10 +121,12 @@ QString QmlInstrumentTask::instrumentFile(const QString &filename, bool &okay)
     QString code = QTextStream(&file).readAll();
     file.close();
 
+    QFileInfo fileInfo(filename);
+
     if (filename.endsWith(".qml")) {
-        return instrumentQml(code, filename, okay);
+        return instrumentQml(code, fileInfo.absoluteFilePath(), okay);
     } else if (filename.endsWith(".js")) {
-        return instrumentJs(code, filename, okay);
+        return instrumentJs(code, fileInfo.absoluteFilePath(), okay);
     }
 
     qCritical() << "Cannot handle" << filename;
