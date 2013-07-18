@@ -74,7 +74,7 @@ void TestRunner::testScriptCollector()
     testScript(scripts.at(6), "overideProp", ScriptCollector::Property, 34, 18, 34, 27);
     testScript(scripts.at(7), "onHandler", ScriptCollector::Property, 34, 40, 34, 41);
     testScript(scripts.at(8), "two", ScriptCollector::Property, 35, 30, 35, 38);
-    testScript(scripts.at(9), "jsFunctionProp", ScriptCollector::AnonymousFunctionProperty, 43, 34, 44, 5);
+    testScript(scripts.at(9), "jsFunctionProp", ScriptCollector::AnonymousFunctionProperty, 43, 45, 44, 5);
     testScript(scripts.at(10), "inlineFunction", ScriptCollector::Function, 46, 67, 46, 68);
     testScript(scripts.at(11), "inlineListFunction", ScriptCollector::Function, 47, 82, 47, 83);
     testScript(scripts.at(12), "onSomeEventHandler", ScriptCollector::Property, 49, 35, 50, 5);
