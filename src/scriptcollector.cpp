@@ -125,21 +125,7 @@ void ScriptCollector::collectJS(QQmlScript::Object *node, const QString &data)
                     // properties with qml objects
                     collectJS(value->object, data); // recurse
                 } else if (value->value.isScript()) {
-
-                    // qDebug().nospace() << ">>>>> " << toString(prop->name()) << " ("
-                    //                   << value->location.start.line << ":" << value->location.start.column << " to "
-                    //                   << value->location.end.line << ":" << value->location.end.column << ")";
-
-                    // Javascript ->
-                    // qDebug() << value->value.asScript();
-
-                    Script script = {toString(prop->name()),
-                                     value->value.asScript(),
-                                     ScriptCollector::Property,
-                                     { { value->location.start.line, value->location.start.column },
-                                       { value->location.end.line, value->location.end.column },
-                                       { value->location.range.offset, value->location.range.length } } };
-                    m_scripts.append(script);
+                    readScriptValue(value, toString(prop->name()), data);
                 }
             }
 
@@ -180,49 +166,7 @@ void ScriptCollector::collectJS(QQmlScript::Object *node, const QString &data)
             while (value != 0) {
 
                 if (value->value.isScript()) {
-
-                    int kind = 0;
-                    QQmlJS::AST::Node *ast = value->value.asAST();
-                    if (ast) {
-                        kind = ast->kind;
-                    }
-
-                    // do not append ObjectLiterals
-                    if (kind != QQmlJS::AST::Node::Kind_ObjectLiteral) {
-
-                        // qDebug().nospace() << ">>>>> " << toString(dprop->name) << " ("
-                        //                   << value->location.start.line << ":" << value->location.start.column << " to "
-                        //                   << value->location.end.line << ":" << value->location.end.column << ")";
-
-                        // Javascript ->
-                        // qDebug() << value->value.asScript();
-
-                        if (kind == QQmlJS::AST::Node::Kind_FunctionExpression) {
-                            QQmlJS::AST::FunctionExpression *fun = static_cast<QQmlJS::AST::FunctionExpression*>(ast);
-
-                            quint32 len = fun->rbraceToken.offset - fun->lbraceToken.offset + 1;
-                            Script script = {toString(dprop->name),
-                                             data.mid(fun->lbraceToken.offset, len),
-                                             ScriptCollector::AnonymousFunctionProperty,
-                                             { { (quint16)fun->lbraceToken.startLine,
-                                                 (quint16)fun->lbraceToken.startColumn },
-                                               { (quint16)fun->rbraceToken.startLine,
-                                                 (quint16)fun->rbraceToken.startColumn },
-                                               { fun->lbraceToken.offset, len } } };
-
-                            m_scripts.append(script);
-                        } else {
-                            Script script = {toString(dprop->name),
-                                             value->value.asScript(),
-                                             ScriptCollector::Property,
-                                             { { value->location.start.line, value->location.start.column },
-                                               { value->location.end.line, value->location.end.column },
-                                               { value->location.range.offset, value->location.range.length } } };
-
-                            m_scripts.append(script);
-                        }
-
-                    }
+                    readScriptValue(value, toString(dprop->name), data);
                 }
 
                 value = prop->values.next(value);
@@ -259,6 +203,52 @@ void ScriptCollector::collectJS(QQmlScript::Object *node, const QString &data)
         // qDebug() << script << line << column;
 
         dslot = node->dynamicSlots.next(dslot);
+    }
+}
+
+void ScriptCollector::readScriptValue(QQmlScript::Value *value, const QString &name, const QString &data)
+{
+    int kind = 0;
+    QQmlJS::AST::Node *ast = value->value.asAST();
+    if (ast) {
+        kind = ast->kind;
+    }
+
+    // do not append ObjectLiterals
+    if (kind != QQmlJS::AST::Node::Kind_ObjectLiteral) {
+
+        // qDebug().nospace() << ">>>>> " << toString(dprop->name) << " ("
+        //                   << value->location.start.line << ":" << value->location.start.column << " to "
+        //                   << value->location.end.line << ":" << value->location.end.column << ")";
+
+        // Javascript ->
+        // qDebug() << value->value.asScript();
+
+        if (kind == QQmlJS::AST::Node::Kind_FunctionExpression) {
+            QQmlJS::AST::FunctionExpression *fun = static_cast<QQmlJS::AST::FunctionExpression*>(ast);
+
+            quint32 len = fun->rbraceToken.offset - fun->lbraceToken.offset + 1;
+            Script script = {name,
+                             data.mid(fun->lbraceToken.offset, len),
+                             ScriptCollector::AnonymousFunctionProperty,
+                             { { (quint16)fun->lbraceToken.startLine,
+                                 (quint16)fun->lbraceToken.startColumn },
+                               { (quint16)fun->rbraceToken.startLine,
+                                 (quint16)fun->rbraceToken.startColumn },
+                               { fun->lbraceToken.offset, len } } };
+
+            m_scripts.append(script);
+        } else {
+            Script script = {name,
+                             value->value.asScript(),
+                             ScriptCollector::Property,
+                             { { value->location.start.line, value->location.start.column },
+                               { value->location.end.line, value->location.end.column },
+                               { value->location.range.offset, value->location.range.length } } };
+
+            m_scripts.append(script);
+        }
+
     }
 }
 

@@ -8,6 +8,7 @@
 
 namespace QQmlScript {
  class Object;
+ class Value;
 }
 
 /**
@@ -88,7 +89,9 @@ public:
     quint32 objectStartOffset() const;
 
     static void mapOffsetToLineAndColumn(const QString &data, const quint32 &offset, quint16 &line, quint16 &column);
+
 private:
+    void readScriptValue(QQmlScript::Value *value, const QString &name, const QString &data);
     void determineObjectStartOffset(const QString &data, QQmlScript::Object *node);
     void collectJS(QQmlScript::Object *node, const QString &data);
 
