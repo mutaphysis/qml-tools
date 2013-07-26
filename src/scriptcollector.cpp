@@ -21,8 +21,7 @@ inline bool isLineTerminatorSequence(const QChar &c)
     }
 }
 
-ScriptCollector::ScriptCollector() :
-    m_objectStartOffset(0)
+ScriptCollector::ScriptCollector()
 {
 }
 
@@ -42,7 +41,6 @@ bool ScriptCollector::parse(const QString &data,
     if (parser.errors().isEmpty()) {
         qDebug() << "Parsed" << urlString << "successfully";
         collectJS(parser.tree(), data);
-        determineObjectStartOffset(data, parser.root);
         qSort(m_scripts);
         return true;
     } else {
@@ -67,30 +65,26 @@ QList<ScriptCollector::Script> ScriptCollector::scripts() const
     return m_scripts;
 }
 
-quint32 ScriptCollector::objectStartOffset() const
-{
-    return m_objectStartOffset;
-}
-
 inline QString toString(const QHashedStringRef& ref)
 {
     return QString(ref.constData(), ref.length());
 }
 
 // This is really ugly, should use the real parser instead... but no internal access
-void ScriptCollector::determineObjectStartOffset(const QString &data, QQmlScript::Object *node)
+quint32 ScriptCollector::determineObjectStartOffset(const QString &data, QQmlScript::Object *node)
 {
     static QLatin1Char CHAR_SLASH('/');
     static QLatin1Char CHAR_STAR('*');
     static QLatin1Char CHAR_CURLY_OPEN('{');
-    m_objectStartOffset = node->location.range.offset;
+
+    quint32 objectStartOffset = node->location.range.offset;
 
     bool multilineComment = false;
     bool singleLineComment = false;
     for (quint32 index = node->location.range.offset,
                  length = node->location.range.offset + node->location.range.length;
                  index <= length; ++index) {
-        ++m_objectStartOffset;
+        ++objectStartOffset;
 
         if (!multilineComment && !singleLineComment) {
             if (data.at(index) == CHAR_SLASH && data.at(index + 1) == CHAR_SLASH) {
@@ -98,7 +92,7 @@ void ScriptCollector::determineObjectStartOffset(const QString &data, QQmlScript
             } else if (data.at(index) == CHAR_SLASH && data.at(index + 1) == CHAR_STAR) {
                 multilineComment = true;
             } else if (data.at(index) == CHAR_CURLY_OPEN) {
-                return;
+                break;
             }
         }
 
@@ -110,10 +104,16 @@ void ScriptCollector::determineObjectStartOffset(const QString &data, QQmlScript
             singleLineComment = false;
         }
     }
+
+    return objectStartOffset;
 }
 
-void ScriptCollector::collectJS(QQmlScript::Object *node, const QString &data)
+void ScriptCollector::collectJS(QQmlScript::Object *node, const QString &data, quint32 objectStartOffset)
 {
+    if (!objectStartOffset) {
+        objectStartOffset = ScriptCollector::determineObjectStartOffset(data, node);
+    }
+
     // main properties
     QQmlScript::Property *prop = node->properties.first();
     while (prop != 0) {
@@ -125,16 +125,16 @@ void ScriptCollector::collectJS(QQmlScript::Object *node, const QString &data)
                     // properties with qml objects
                     collectJS(value->object, data); // recurse
                 } else if (value->value.isScript()) {
-                    readScriptValue(value, toString(prop->name()), data);
+                    readScriptValue(value, toString(prop->name()), data, objectStartOffset);
                 }
             }
 
             value = prop->values.next(value);
         }
 
-        // grouped and attached properties have sub nodes
+        // grouped and attached properties have sub nodes, but are owned by parent
         if (prop->value) {
-            collectJS(prop->value, data);
+            collectJS(prop->value, data, objectStartOffset);
         }
 
         prop = node->properties.next(prop);
@@ -166,7 +166,7 @@ void ScriptCollector::collectJS(QQmlScript::Object *node, const QString &data)
             while (value != 0) {
 
                 if (value->value.isScript()) {
-                    readScriptValue(value, toString(dprop->name), data);
+                    readScriptValue(value, toString(dprop->name), data, objectStartOffset);
                 }
 
                 value = prop->values.next(value);
@@ -192,12 +192,15 @@ void ScriptCollector::collectJS(QQmlScript::Object *node, const QString &data)
         quint16 line, column;
         mapOffsetToLineAndColumn(data, dslot->location.range.offset + offset, line, column);
 
-        Script script = {toString(dslot->name),
-                         dslot->body,
-                         ScriptCollector::Function,
-                         { { line, column },
-                           { dslot->location.end.line, dslot->location.end.column },
-                           { dslot->location.range.offset + offset, dslot->location.range.length - offset } } };
+        Script script = {
+            toString(dslot->name),
+            dslot->body,
+            ScriptCollector::Function,
+            { { line, column },
+              { dslot->location.end.line, dslot->location.end.column },
+              { dslot->location.range.offset + offset, dslot->location.range.length - offset } },
+            objectStartOffset
+        };
         m_scripts.append(script);
 
         // qDebug() << script << line << column;
@@ -206,7 +209,7 @@ void ScriptCollector::collectJS(QQmlScript::Object *node, const QString &data)
     }
 }
 
-void ScriptCollector::readScriptValue(QQmlScript::Value *value, const QString &name, const QString &data)
+void ScriptCollector::readScriptValue(QQmlScript::Value *value, const QString &name, const QString &data, quint32 objectStartOffset)
 {
     int kind = 0;
     QQmlJS::AST::Node *ast = value->value.asAST();
@@ -228,23 +231,29 @@ void ScriptCollector::readScriptValue(QQmlScript::Value *value, const QString &n
             QQmlJS::AST::FunctionExpression *fun = static_cast<QQmlJS::AST::FunctionExpression*>(ast);
 
             quint32 len = fun->rbraceToken.offset - fun->lbraceToken.offset + 1;
-            Script script = {name,
-                             data.mid(fun->lbraceToken.offset, len),
-                             ScriptCollector::AnonymousFunctionProperty,
-                             { { (quint16)fun->lbraceToken.startLine,
-                                 (quint16)fun->lbraceToken.startColumn },
-                               { (quint16)fun->rbraceToken.startLine,
-                                 (quint16)fun->rbraceToken.startColumn },
-                               { fun->lbraceToken.offset, len } } };
+            Script script = {
+                name,
+                data.mid(fun->lbraceToken.offset, len),
+                ScriptCollector::AnonymousFunctionProperty,
+                { { (quint16)fun->lbraceToken.startLine,
+                    (quint16)fun->lbraceToken.startColumn },
+                  { (quint16)fun->rbraceToken.startLine,
+                    (quint16)fun->rbraceToken.startColumn },
+                  { fun->lbraceToken.offset, len } },
+                objectStartOffset
+            };
 
             m_scripts.append(script);
         } else {
-            Script script = {name,
-                             value->value.asScript(),
-                             ScriptCollector::Property,
-                             { { value->location.start.line, value->location.start.column },
-                               { value->location.end.line, value->location.end.column },
-                               { value->location.range.offset, value->location.range.length } } };
+            Script script = {
+                name,
+                value->value.asScript(),
+                ScriptCollector::Property,
+                { { value->location.start.line, value->location.start.column },
+                  { value->location.end.line, value->location.end.column },
+                  { value->location.range.offset, value->location.range.length } },
+                objectStartOffset
+            };
 
             m_scripts.append(script);
         }

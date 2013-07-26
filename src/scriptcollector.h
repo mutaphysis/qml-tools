@@ -71,6 +71,7 @@ public:
         QString code;
         Type type;
         LocationSpan location;
+        quint32 owningObjectStartOffset; // the object that script node is part of
 
         bool operator<(const Script &o) const
         {
@@ -91,13 +92,13 @@ public:
     static void mapOffsetToLineAndColumn(const QString &data, const quint32 &offset, quint16 &line, quint16 &column);
 
 private:
-    void readScriptValue(QQmlScript::Value *value, const QString &name, const QString &data);
-    void determineObjectStartOffset(const QString &data, QQmlScript::Object *node);
-    void collectJS(QQmlScript::Object *node, const QString &data);
+    static quint32 determineObjectStartOffset(const QString &data, QQmlScript::Object *node);
+
+    void readScriptValue(QQmlScript::Value *value, const QString &name, const QString &data, quint32 objectStartOffset);
+    void collectJS(QQmlScript::Object *node, const QString &data, quint32 objectStartOffset = 0);
 
     QList<QQmlError> m_errors;
     QList<ScriptCollector::Script> m_scripts;
-    quint32 m_objectStartOffset;
 };
 
 QDebug operator<<(QDebug dbg, const ScriptCollector::Script &script);

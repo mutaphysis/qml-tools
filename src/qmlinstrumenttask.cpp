@@ -14,9 +14,14 @@
 #include "scriptcollector.h"
 
 struct Replacement {
-    ScriptCollector::Script original;
+    quint32 offset;
+    quint32 length;
     QString replacement;
 };
+
+bool replacementComparator(const Replacement &left, const Replacement &right) {
+  return left.offset < right.offset;
+}
 
 QmlInstrumentTask::QmlInstrumentTask(QObject *parent) :
     QObject(parent),
@@ -167,19 +172,26 @@ QString QmlInstrumentTask::instrumentQml(const QString &code, const QString &fil
                 instrumented.code = QStringLiteral("{%1}").arg(instrumented.code);
             }
 
-            Replacement replacement = { script, instrumented.code };
-            replacements << replacement;
-            properties << instrumented.property;
+            Replacement scriptReplacement = {
+                script.location.range.offset,
+                script.location.range.length,
+                instrumented.code
+            };
+
+            Replacement propertyReplacement = {
+                script.owningObjectStartOffset,
+                0,
+                "\n" + instrumented.property + "\n"
+            };
+
+            replacements << propertyReplacement << scriptReplacement;
         } else {
             qCritical() << "Error instrumenting" << filename << script << script.code;
         }
 
     }
 
-    properties << "\n";
     QString results = rewrite(code, replacements);
-
-    results.replace(collector.objectStartOffset(), 0, properties.join("\n    "));
     results.replace(0, 0, "import QtCov 1.0 as QtCov; ");
 
     okay = true;
@@ -261,23 +273,31 @@ bool QmlInstrumentTask::saveInitialCoverageData(const QString &out)
     return true;
 }
 
+
 QString QmlInstrumentTask::rewrite(
         const QString &originalContents,
-        const QList<Replacement> &replacements)
+        const QList<Replacement> &creplacements)
 {
     int offset = 0;
 
     QString replacedContents = originalContents;
 
+    QList<Replacement> replacements = creplacements;
+    qSort(replacements.begin(), replacements.end(), replacementComparator);
+
+
     foreach (Replacement replacement, replacements) {
-        //        qDebug() << "rewriting" << replacement.original.location.range.offset;
-        //        qDebug() << replacedContents.mid(replacement.original.location.range.offset + offset, replacement.original.location.range.length);
-        //        qDebug() << "with\n" << replacement.replacement;
+        // qDebug() << "rewriting" << replacement.offset;
+        // qDebug() << replacedContents.mid(replacement.offset + offset, replacement.length);
+        // qDebug() << "with\n" << replacement.replacement;
+
         replacedContents.replace(
-                    replacement.original.location.range.offset + offset,
-                    replacement.original.location.range.length,
+                    replacement.offset + offset,
+                    replacement.length,
                     replacement.replacement);
-        offset += replacement.replacement.length() - replacement.original.location.range.length;
+
+
+        offset += replacement.replacement.length() - replacement.length;
     }
 
     return replacedContents;

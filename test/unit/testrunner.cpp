@@ -62,8 +62,9 @@ void TestRunner::testScriptCollector()
     }
 
     QCOMPARE(scripts.length(), 14);
-    QCOMPARE(collector.objectStartOffset(), (quint32)index);
     QVERIFY(collector.errors().isEmpty());
+
+    QCOMPARE(scripts.at(0).owningObjectStartOffset, (quint32)index);
 
     testScript(scripts.at(0), "firstFunction", ScriptCollector::Function, 12, 30, 14, 5);
     testScript(scripts.at(1), "secondFunction", ScriptCollector::Function, 16, 31, 18, 5);
