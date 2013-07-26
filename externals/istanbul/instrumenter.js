@@ -389,8 +389,7 @@
             codegenOptions = this.opts.codeGenerationOptions || { format: { compact: !this.opts.noCompact }};
             //console.log(JSON.stringify(program, undefined, 2));
 
-            return { property: this.getPropertyDefinition(code),
-                     preamble: this.getPreamble(code),
+            return { preamble: this.getPreamble(code),
                      code: ESPGEN.generate(program, codegenOptions)
             };
         },
@@ -463,32 +462,6 @@
                     }
                 }
             }
-        },
-
-        getPropertyDefinition: function (sourceCode) {
-            var varName = this.opts.coverageVariable || '__coverage__',
-                file = this.coverState.path.replace(/\\/g, '\\\\'),
-                tracker = this.currentState.trackerVar,
-                coverState,
-                // return replacements using the function to ensure that the replacement is
-                // treated like a dumb string and not as a string with RE replacement patterns
-                replacer = function (s) {
-                    return function () { return s; };
-                },
-                code;
-            if (!this.opts.noAutoWrap) {
-                this.fixColumnPositions(this.coverState);
-            }
-            if (this.opts.embedSource) {
-                this.coverState.code = sourceCode.split(/\n/);
-            }
-            coverState = this.opts.debug ? JSON.stringify(this.coverState, undefined, 4) : JSON.stringify(this.coverState);
-            code = "readonly property var %VAR%: %GLOBAL%['%FILE%'] ? %GLOBAL%['%FILE%'] : (%GLOBAL%['%FILE%'] = %OBJECT%);"
-                .replace(/%VAR%/g, replacer(tracker))
-                .replace(/%GLOBAL%/g, replacer(varName))
-                .replace(/%FILE%/g, replacer(file))
-                .replace(/%OBJECT%/g, replacer(coverState));
-            return code;
         },
 
         getPreamble: function (sourceCode) {

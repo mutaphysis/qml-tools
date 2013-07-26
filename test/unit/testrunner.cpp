@@ -101,11 +101,11 @@ void TestRunner::testJsInstrument()
                                            "    }"
                                            "}", "unknown.js", 5, 10);
     QString code = instrumented.code;
-    QString property = instrumented.property;
+    QString preamble = instrumented.preamble;
 
     //qDebug() << property << "\n" << code;
     QVERIFY(code.length() > 0);
-    QVERIFY(property.length() > 0);
+    QVERIFY(preamble.length() > 0);
 }
 
 void TestRunner::testQmlInstrumentTask()

@@ -166,11 +166,13 @@ QString QmlInstrumentTask::instrumentQml(const QString &code, const QString &fil
                     script.location.start.line,
                     script.location.start.column);
 
-        if (!instrumented.code.isEmpty() && !instrumented.property.isEmpty()) {
+        if (!instrumented.code.isEmpty() && !instrumented.preamble.isEmpty()) {
             // make sure code is always surrounded by {}
             if (instrumented.code.at(0) != QStringLiteral("{")) {
                 instrumented.code = QStringLiteral("{%1}").arg(instrumented.code);
             }
+
+            instrumented.code.replace(1, 0, "\n" + instrumented.preamble + "\n");
 
             Replacement scriptReplacement = {
                 script.location.range.offset,
@@ -178,13 +180,7 @@ QString QmlInstrumentTask::instrumentQml(const QString &code, const QString &fil
                 instrumented.code
             };
 
-            Replacement propertyReplacement = {
-                script.owningObjectStartOffset,
-                0,
-                "\n" + instrumented.property + "\n"
-            };
-
-            replacements << propertyReplacement << scriptReplacement;
+            replacements << scriptReplacement;
         } else {
             qCritical() << "Error instrumenting" << filename << script << script.code;
         }

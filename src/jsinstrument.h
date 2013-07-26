@@ -11,7 +11,6 @@ class JsInstrument : public QObject
 public:
     struct Instrumented {
         QString code;
-        QString property;
         QString preamble;
     };
 
@@ -27,7 +26,7 @@ public:
 private:
     bool setup();
 
-    QJSEngine m_engine;    
+    QJSEngine m_engine;
     QJSValue m_coverageData;
     QJSValue m_instrumenterInstance;
 };

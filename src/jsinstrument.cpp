@@ -30,7 +30,7 @@ bool JsInstrument::setup()
     if (esprimaLoader.isError()) {
         qCritical() << "Uncaught exception:" << esprimaLoader.toString();
         return false;
-    }    
+    }
 
     // -- //
 
@@ -109,7 +109,6 @@ JsInstrument::Instrumented JsInstrument::instrument(
 
 
     Instrumented result = {results.property("code").toString(),
-                           results.property("property").toString(),
                            results.property("preamble").toString()};
 
     QJSValue storePreamble = m_engine.evaluate(result.preamble);

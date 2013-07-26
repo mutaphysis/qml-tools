@@ -26,7 +26,7 @@ static QJSValue coverage_singletontype_provider(QQmlEngine *engine, QJSEngine *s
 }
 
 void QmlCovPlugin::registerTypes(const char *uri)
-{    
+{
     qmlRegisterSingletonType(uri, 1, 0, "coverage", coverage_singletontype_provider);
 }
 
@@ -47,7 +47,7 @@ void QmlCovPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
 }
 
 void QmlCovPlugin::save()
-{    
+{
     bool okay = QmlCovPlugin::saveCoverageData(g_engine);
 
     if (okay) {
@@ -182,6 +182,7 @@ QJSValue QmlCovPlugin::loadCoverageData(QJSEngine *scriptEngine)
         bool okay = QmlCovPlugin::jsParse(scriptEngine, code, result);
 
         if (okay) {
+            qDebug() << "Loaded coverage data from" << path;
             return result;
         }
     }
